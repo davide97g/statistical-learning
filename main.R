@@ -1,10 +1,7 @@
 ### main script
 
 ### load data
-data("iris")
+df <- read.csv("./data/Plant_1_Generation_Data.csv")
+head(df)
+attach(df)
 
-### attach data
-attach(iris)
-
-### plot data
-plot(iris)
