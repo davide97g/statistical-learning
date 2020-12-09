@@ -2,10 +2,14 @@
 
 Statistical learning project 2020
 
-# authors
+## authors
 
 Davide Ghiotto | Darko Ivanovski
 
-# language
+## language
 
 R + RStudio
+
+## requirements
+
+- R + RStudio
