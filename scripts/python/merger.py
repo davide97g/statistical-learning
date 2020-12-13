@@ -8,6 +8,8 @@ features = ["Commenti", "IscrittiConquistati", "IscrittiPersi",
 columns_to_drop = ["Titolo video",
                    "Ora pubblicazione video"]
 
+path_to_save = "../../data/merged/"
+
 for feature in features:
 
     print("\n### FEATURE "+feature+"\n")
@@ -24,7 +26,7 @@ for feature in features:
     total_df = pd.DataFrame()
 
     for f in files:
-        print("\tFile: "+f)
+        # print("\tFile: "+f)
 
         # read csv
         df = pd.read_csv(f)
@@ -38,7 +40,5 @@ for feature in features:
         if len(total_df) == 0:
             total_df = df
         else:
-            print("append")
             total_df.append(df)
-
-    # print(total_df)
+    total_df.to_csv(path_to_save+feature+"_total.csv", index=False)
