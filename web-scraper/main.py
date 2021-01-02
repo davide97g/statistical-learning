@@ -45,7 +45,6 @@ if __name__ == "__main__":
                     league["href"] for league in Leagues}
     LeaguesData = []
     for leagueName, leagueUrl in LeagueUrlDic.items():
-        print("Scraping the %s..." % leagueName)
         LeaguesData.append(League(leagueName, leagueUrl, scraper))
 
     # flattening all players information to pandas.DataFrame and exporting to csv
