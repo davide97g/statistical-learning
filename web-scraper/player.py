@@ -142,9 +142,9 @@ class PlayerProfile:
             return "M-LM"
         elif "attack - Second Striker" in position:
             return "A-SS"
-               elif "attack" in position:
-                    return "A"
-                elif "Defender" in position:
-                    return "D"
+        elif "attack" in position:
+            return "A"
+        elif "Defender" in position:
+            return "D"
         else:
             print("\n\tPosition", position, "not mapped")
