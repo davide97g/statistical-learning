@@ -85,7 +85,7 @@ class PlayerProfile:
 
         self.PlayerData = pd.Series(playerAttributes).append(performanceSeries)
         # print("\t%s done" % self.PlayerData["name"])
-        print(self.PlayerData)
+        # print(self.PlayerData)
 
     def __str__(self):
         return "Performance profile for %s" % self.PlayerData["name"]
