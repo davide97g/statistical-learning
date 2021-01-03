@@ -51,4 +51,4 @@ if __name__ == "__main__":
     PlayerProfiles = [
         player.PlayerData for league in LeaguesData for team in league.TeamsData for player in team.PlayersData]
     df = pd.DataFrame(PlayerProfiles)
-    df.to_csv("../data/performance-complete.csv", index=False)
+    df.to_csv("../data/performance-new.csv", index=False)

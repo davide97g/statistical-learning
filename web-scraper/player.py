@@ -41,7 +41,7 @@ class PlayerProfile:
                 playerAttributes["nationality"] = playerAttributes["nationality"].replace(
                     "\xa0", " ")
         if "position" in playerAttributes:
-            playerAttributes["position"] = PlayerProfile.mapPosition(
+            playerAttributes["position"], playerAttributes["sub position"] = PlayerProfile.mapPosition(
                 playerAttributes["position"])
         if "age" in playerAttributes:
             playerAttributes["age"] = int(playerAttributes["age"])
@@ -85,7 +85,7 @@ class PlayerProfile:
 
         self.PlayerData = pd.Series(playerAttributes).append(performanceSeries)
         # print("\t%s done" % self.PlayerData["name"])
-        # print(self.PlayerData)
+        print(self.PlayerData)
 
     def __str__(self):
         return "Performance profile for %s" % self.PlayerData["name"]
@@ -119,32 +119,33 @@ class PlayerProfile:
     @ staticmethod
     def mapPosition(position):
         if 'attack - Right Winger' in position:
-            return "A-RW"
+            return ["A", "RW"]
         elif 'attack - Left Winger' in position:
-            return "A-LW"
+            return ["A", "LW"]
         elif "Centre-Forward" in position:
-            return "CF"
+            return ["CF", "-"]
         elif "Defender - Centre-Back" in position:
-            return "D-CB"
+            return ["D", "CB"]
         elif "Defender - Left-Back" in position:
-            return "D-LB"
+            return ["D", "LB"]
         elif "Defender - Right-Back" in position:
-            return "D-RB"
+            return ["D", "RB"]
         elif "midfield - Defensive Midfield" in position:
-            return "M-DM"
+            return ["M", "DM"]
         elif "midfield - Central Midfield" in position:
-            return "M-CM"
+            return ["M", "CM"]
         elif "midfield - Attacking Midfield" in position:
-            return "M-AM"
+            return ["M", "AM"]
         elif "midfield - Right Midfield" in position:
-            return "M-RM"
+            return ["M", "RM"]
         elif "midfield - Left Midfield" in position:
-            return "M-LM"
+            return ["M", "LM"]
         elif "attack - Second Striker" in position:
-            return "A-SS"
+            return ["A", "SS"]
         elif "attack" in position:
-            return "A"
+            return ["A", "-"]
         elif "Defender" in position:
-            return "D"
+            return ["D", "-"]
         else:
             print("\n\tPosition", position, "not mapped")
+            return ["-", "-"]
