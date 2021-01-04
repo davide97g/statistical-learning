@@ -33,3 +33,4 @@ summary(my.model)
 par(mfrow=c(2,2))
 plot(my.model)
 par(mfrow=c(1,1))
+
