@@ -1,5 +1,5 @@
 ##### 2. CLEAN & FILTER DATA ######
-df <- read.csv("./data/performance-position.csv",encoding = "UTF-8")
+df <- read.csv("./data/performance.csv",encoding = "UTF-8")
 print(head(df))
 attach(df)
 
