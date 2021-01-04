@@ -1,226 +1,195 @@
 ##### 2. CLEAN & FILTER DATA ######
+install.packages("tidyverse")
+library(tidyverse)
 df <- read.csv("./data/performance.csv",encoding = "UTF-8")
-print(head(df))
-attach(df)
-# df['contract.expires.numeric'] = as.numeric(df[['contract.expires']])
-df$market.value = as.numeric(as.character(df$market.value))
 
-# filtering NA
-for(col in colnames(df)){
-  df <- df[!is.na(df[col]), ]
+# visualize dataframe
+head(df)
+
+## drop useless columns
+df$current.club = NULL
+
+##### rename columns
+names(df)
+
+# rename games columns
+df <- rename(df,games.17.18=X17.18.games)
+df <- rename(df,games.18.19=X18.19.games)
+df <- rename(df,games.19.20=X19.20.games)
+df <- rename(df,games.20.21=X20.21.games)
+
+# rename goals columns
+df <- rename(df,goals.17.18=X17.18.goals)
+df <- rename(df,goals.18.19=X18.19.goals)
+df <- rename(df,goals.19.20=X19.20.goals)
+df <- rename(df,goals.20.21=X20.21.goals)
+
+# rename assists columns
+df <- rename(df,assists.17.18=X17.18.assists)
+df <- rename(df,assists.18.19=X18.19.assists)
+df <- rename(df,assists.19.20=X19.20.assists)
+df <- rename(df,assists.20.21=X20.21.assists)
+
+# rename yellows columns
+df <- rename(df,yellows.17.18=X17.18.yellows)
+df <- rename(df,yellows.18.19=X18.19.yellows)
+df <- rename(df,yellows.19.20=X19.20.yellows)
+df <- rename(df,yellows.20.21=X20.21.yellows)
+
+# rename second yellows columns
+df <- rename(df,second.yellows.17.18=X17.18.second.yellows)
+df <- rename(df,second.yellows.18.19=X18.19.second.yellows)
+df <- rename(df,second.yellows.19.20=X19.20.second.yellows)
+df <- rename(df,second.yellows.20.21=X20.21.second.yellows)
+
+# rename reds columns
+df <- rename(df,reds.17.18=X17.18.reds)
+df <- rename(df,reds.18.19=X18.19.reds)
+df <- rename(df,reds.19.20=X19.20.reds)
+df <- rename(df,reds.20.21=X20.21.reds)
+
+# rename minutes columns
+df <- rename(df,minutes.17.18=X17.18.minutes)
+df <- rename(df,minutes.18.19=X18.19.minutes)
+df <- rename(df,minutes.19.20=X19.20.minutes)
+df <- rename(df,minutes.20.21=X20.21.minutes)
+
+###############################
+### TYPE CHECK & CONVERSION ###
+###############################
+
+# type check 
+
+typeof(df$age) # integer
+typeof(df$height) # double
+
+df[is.integer(df$name),]
+typeof(df$games.17.18) # double
+typeof(df$goals.17.18) # double
+typeof(df$assists.17.18) # double
+typeof(df$yellows.17.18) # double
+typeof(df$second.yellows.17.18) # double
+typeof(df$reds.17.18) # double
+typeof(df$minutes.17.18) # double
+
+### MARKET.VALUE
+# need to cast this feature to integer for later development
+typeof(df$market.value)
+hist(df$market.value) # ! this fails: not recognized as numeric
+df$market.value = as.integer(as.character(df$market.value)) # cast to character and then to integer
+df <- df[!is.na(df$market.value),] # remove the NA produces by casting to integer the "-" values
+typeof(df$market.value) # now I have integer type
+hist(log(df$market.value)) # now it works
+
+### CONTRACT.EXPIRES
+# convert contract dates to only year number and then to integers
+for(x in unique(df$contract.expires)){
+  splitted <- str_split(x,", ",simplify = TRUE)
+  to.replace <- paste(splitted[1],", ",sep="")
+  df$contract.expires <- gsub(to.replace, '', df$contract.expires)
 }
-df <- df[df$foot!='',]
 
-# some distributions
+df$contract.expires = as.integer(df$contract.expires) # cast to character and then to integer
+contract.min <- min(df$contract.expires, na.rm = TRUE) # find minimun excluding NA
+df$contract.expires <-  df$contract.expires-contract.min # normalize data
+df[is.na(df$contract.expires),'contract.expires']=0 # the NA will become contract.expires == 2021
 
-### numeric
-# static attributes
-hist(df$age)
-hist(df$height, breaks = 50)
-# typeof(df$height)
-df$market.value[1]
-hist(log(df$market.value))
-qqnorm(log(df$market.value))
-qqline(log(df$market.value))
-# hist(df$contract.expires) # need to convert to numeric
+### YELLOWS, SECOND YELLOWS, REDS
 
-# season-related attributes 17/18
-par(mfrow=c(2,2))
-hist(df$X17.18.games, freq = FALSE)
-lines(density(df$X17.18.games))
-hist(df$X17.18.minutes, freq = FALSE)
-lines(density(df$X17.18.minutes))
-hist(df$X17.18.goals, freq = FALSE)
-lines(density(df$X17.18.goals))
-hist(df$X17.18.assists, freq = FALSE)
-lines(density(df$X17.18.assists))
-par(mfrow=c(1,1))
+# for every yellows, if NA --> 0
+df[is.na(df$yellows.17.18),'yellows.17.18'] = 0
+df[is.na(df$yellows.18.19),'yellows.18.19'] = 0
+df[is.na(df$yellows.19.20),'yellows.19.20'] = 0
+df[is.na(df$yellows.20.21),'yellows.20.21'] = 0
 
-# season-related attributes 18/19
-par(mfrow=c(2,2))
-hist(df$X18.19.games, freq = FALSE)
-lines(density(df$X18.19.games))
-hist(df$X18.19.minutes, freq = FALSE)
-lines(density(df$X18.19.minutes))
-hist(df$X18.19.goals, freq = FALSE)
-lines(density(df$X18.19.goals))
-hist(df$X18.19.assists, freq = FALSE)
-lines(density(df$X18.19.assists))
-par(mfrow=c(1,1))
+# for every second yellows, if NA --> 0
+df[is.na(df$second.yellows.17.18),'second.yellows.17.18'] = 0
+df[is.na(df$second.yellows.18.19),'second.yellows.18.19'] = 0
+df[is.na(df$second.yellows.19.20),'second.yellows.19.20'] = 0
+df[is.na(df$second.yellows.20.21),'second.yellows.20.21'] = 0
 
+# for every reds, if NA --> 0
+df[is.na(df$reds.17.18),'reds.17.18'] = 0
+df[is.na(df$reds.18.19),'reds.18.19'] = 0
+df[is.na(df$reds.19.20),'reds.19.20'] = 0
+df[is.na(df$reds.20.21),'reds.20.21'] = 0
 
-# season-related attributes 19/20
-par(mfrow=c(2,2))
-hist(df$X19.20.games, freq = FALSE)
-lines(density(df$X19.20.games))
-hist(df$X19.20.minutes, freq = FALSE)
-lines(density(df$X19.20.minutes))
-hist(df$X19.20.goals, freq = FALSE)
-lines(density(df$X19.20.goals))
-hist(df$X19.20.assists, freq = FALSE)
-lines(density(df$X19.20.assists))
-par(mfrow=c(1,1))
+# divide in subclasses
+hist(df$yellows.17.18)
+hist(df$second.yellows.17.18)
 
+                                          ###################################
+                                          ### TODO : Discretization cards ###
+                                          ###################################
 
-# season-related attributes 20/21
-#par(mfrow=c(2,2))
-#hist(df$X20.21.games, freq = FALSE)
-#lines(density(df$X20.21.games))
-#hist(df$X20.21.minutes, freq = FALSE)
-#lines(density(df$X20.21.minutes))
-#hist(df$X20.21.goals, freq = FALSE)
-#lines(density(df$X20.21.goals))
-#hist(df$X20.21.assists, freq = FALSE)
-#lines(density(df$X20.21.assists))
-#par(mfrow=c(1,1))
+### LEAGUES
 
-# comparing games between seasons
-par(mfrow=c(2,3))
-hist(df$X17.18.games, freq = FALSE)
-hist(df$X18.19.games, freq = FALSE)
-hist(df$X19.20.games, freq = FALSE)
-qqnorm(df$X17.18.games)
-qqline(df$X17.18.games)
-qqnorm(df$X18.19.games)
-qqline(df$X18.19.games)
-qqnorm(df$X19.20.games)
-qqline(df$X19.20.games)
-par(mfrow=c(1,1))
-# NORMAL
-
-
-# comparing goals between seasons
-par(mfrow=c(3,3))
-hist(df$X17.18.goals, freq = FALSE)
-hist(df$X18.19.goals, freq = FALSE)
-hist(df$X19.20.goals, freq = FALSE)
-# log transformation
-df <-  df[df$X17.18.goals!=0,]
-df <-  df[df$X18.19.goals!=0,]
-df <-  df[df$X19.20.goals!=0,]
-hist(log(df$X17.18.goals), freq = FALSE)
-hist(log(df$X18.19.goals), freq = FALSE)
-hist(log(df$X19.20.goals), freq = FALSE)
-# normality check
-qqnorm(log(df$X17.18.goals))
-qqline(log(df$X17.18.goals))
-qqnorm(log(df$X18.19.goals))
-qqline(log(df$X18.19.goals))
-qqnorm(log(df$X19.20.goals))
-qqline(log(df$X19.20.goals))
-par(mfrow=c(1,1))
-# NOT SO NORMAL!
-
-# comparing assists between seasons
-par(mfrow=c(3,3))
-hist(df$X17.18.assists, freq = FALSE)
-hist(df$X18.19.assists, freq = FALSE)
-hist(df$X19.20.assists, freq = FALSE)
-# log transformation
-df <-  df[df$X17.18.assists!=0,]
-df <-  df[df$X18.19.assists!=0,]
-df <-  df[df$X19.20.assists!=0,]
-hist(log(df$X17.18.assists), freq = FALSE)
-hist(log(df$X18.19.assists), freq = FALSE)
-hist(log(df$X19.20.assists), freq = FALSE)
-# normality check
-qqnorm(log(df$X17.18.assists))
-qqline(log(df$X17.18.assists))
-qqnorm(log(df$X18.19.assists))
-qqline(log(df$X18.19.assists))
-qqnorm(log(df$X19.20.assists))
-qqline(log(df$X19.20.assists))
-par(mfrow=c(1,1))
-# NOT SO NORMAL!
-
-# comparing minutes between seasons
-par(mfrow=c(2,3))
-hist(df$X17.18.minutes, freq = FALSE)
-hist(df$X18.19.minutes, freq = FALSE)
-hist(df$X19.20.minutes, freq = FALSE)
-# normality check
-qqnorm(df$X17.18.minutes)
-qqline(df$X17.18.minutes)
-qqnorm(df$X18.19.minutes)
-qqline(df$X18.19.minutes)
-qqnorm(df$X19.20.minutes)
-qqline(df$X19.20.minutes)
-par(mfrow=c(1,1))
-# NORMAL!
-
-# yellows
-par(mfrow=c(2,3))
-df <- df[df$X17.18.yellows!=0,]
-df <- df[df$X18.19.yellows!=0,]
-df <- df[df$X19.20.yellows!=0,]
-hist(log(df$X17.18.yellows), freq=FALSE)
-hist(log(df$X18.19.yellows), freq=FALSE)
-hist(log(df$X19.20.yellows), freq=FALSE)
-qqnorm(log(df$X17.18.yellows))
-qqline(log(df$X17.18.yellows))
-qqnorm(log(df$X18.19.yellows))
-qqline(log(df$X18.19.yellows))
-qqnorm(log(df$X19.20.yellows))
-qqline(log(df$X19.20.yellows))
-par(mfrow=c(1,1))
-
-#  compare left/right foot
-right.foot <- df[df$foot=="right" ,]
-left.foot <- df[df$foot=="left",]
-both.foot <- df[df$foot=="both",]
-
-hist(log(df$market.value), freq = FALSE)
-lines(density(log(df$market.value)))
-
-par(mfrow=c(2,3))
-hist(log(right.foot$market.value), freq = FALSE)
-lines(density(log(right.foot$market.value)))
-hist(log(left.foot$market.value), freq = FALSE)
-lines(density(log(left.foot$market.value)))
-hist(log(both.foot$market.value), freq = FALSE)
-lines(density(log(both.foot$market.value)))
-qqnorm(log(right.foot$market.value))
-qqline(log(right.foot$market.value))
-qqnorm(log(left.foot$market.value))
-qqline(log(left.foot$market.value))
-qqnorm(log(both.foot$market.value))
-qqline(log(both.foot$market.value))
-par(mfrow=c(1,1))
-
-# overlap left/right foot market value distributions
-hist(log(right.foot$market.value), col=rgb(0,0,1,1/4), freq = FALSE)  # first histogram
-hist(log(left.foot$market.value), col=rgb(1,0,0,1/4), add=T, freq = FALSE)  # second
-hist(log(both.foot$market.value), col=rgb(1,0,0,2/4), add=T, freq = FALSE)  # second
-plot(density(log(right.foot$market.value)), col=rgb(0,0,1,1/4))  # first histogram
-lines(density(log(left.foot$market.value)), col=rgb(1,0,0,1/4))  # second
-lines(density(log(both.foot$market.value)), col=rgb(1,0,0,2/4))  # third
-# some summaries
-summary(right.foot$market.value)
-summary(left.foot$market.value)
-# hypothesis testing
-t.test(right.foot$market.value,left.foot$market.value)
-t.test(right.foot$market.value,both.foot$market.value)
-t.test(left.foot$market.value,both.foot$market.value)
-# p-value = 0.3708 > 0.05 ==> we cannot reject the null hypothesis : the two samples are drawn from the same distribution
-
-### categorical
-plot(df$position)
-plot(df$foot)
-
-# why only best 5 leagues
+# if we aggregate by league and sum over the market.value we get the following results
 plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
 
-plot(df$X19.20.games,df$X19.20.minutes)
-cor.test(df$X19.20.games,df$X19.20.minutes)
-summary(df$X19.20.games)
-summary(df$X19.20.minutes)
+# As we can see, there is a high difference between major leagues and the "others"
+# for this reasons we decided to put the lower in just one class called "other"
+# major leagues: bundesliga, la liga, ligue 1, premier league, serie a
+# minor leagues: eredivisie, jupiler pro league, liga nos, premier liga, super lig
 
-ratio <- df$X19.20.minutes/df$X19.20.games
-summary(df$X19.20.minutes/summary(ratio)[3])
-t.test(df$X19.20.games,df$X19.20.minutes/summary(ratio)[3])
+df$current.league <-as.character(df$current.league) # cast to character to overwrite values
 
-ratio <- df$X18.19.minutes/df$X18.19.games
-summary(df$X18.19.minutes/summary(ratio)[3])
-t.test(df$X18.19.games,df$X18.19.minutes/summary(ratio)[3])
+df[(df$current.league=="Eredivisie")|
+     (df$current.league=="Jupiler Pro League")|
+     (df$current.league=="Liga NOS")|
+     (df$current.league=="Premier Liga")|
+     (df$current.league=="Süper Lig"),'current.league']= "Other"
 
+df$current.league <- as.factor(df$current.league) # bring the factors back
+# Now the "Other" factor is well balanced with the other major leagues in terms of market.value
+# and we have reduced the complexity of handling small differences between low leagues
+plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
+
+### Merge positions A+CF & D+M
+# offensive and difensive player are classified with differently, maybe the right path should be to create
+# separate models for "A" (attackers/offensive) and "D" (defensive) players.
+plot(df$position)
+df[(df$position=="A")|(df$position=="CF"),"offensive"]=TRUE
+df[(df$position=="D")|(df$position=="M"),"offensive"]=FALSE
+hist(as.numeric(df$offensive), freq = FALSE)
+#########################################
+### FILTER & REMOVE NA & USELESS DATA ###
+#########################################
+
+# fill 0's
+columns.to.fill = c("games.17.18","games.18.19","games.19.20","games.20.21",
+                      "goals.17.18","goals.18.19","goals.19.20","goals.20.21",
+                      "assists.17.18","assists.18.19","assists.19.20","assists.20.21",
+                      "minutes.17.18","minutes.18.19","minutes.19.20","minutes.20.21")
+for(col in columns.to.fill){
+  df[is.na(df[col]),col]=0
+  print(paste("NA filled with 0's in",col))
+}
+
+
+# filtering NA
+# these are the features that can not be NA because
+# we can not give them a default value or the missing value compromised the future model
+columns.to.filter = c("foot","market.value","height","age")
+for(col in columns.to.filter){
+  df <- df[!is.na(df[col]), ]
+  print(paste("removed NA from",col))
+}
+
+# remove empty or useless
+# these are the features that can not be "empty" or "invalid" because
+# we can not give them a default value or the missing value compromised the future model
+columns.useless = c("foot","market.value","height","age")
+for(col in columns.useless){
+  df <- df[df[col]!='', ] # filter "" (empty)
+  df <- df[df[col]!='-', ] # filter "-" (dash)
+  print(paste("removed useless data from",col))
+}
+
+#####################################
+### SAVE CLEAN DATA FRAME TO FILE ###
+#####################################
+
+# save the cleaned data frame to file 
+write.csv(df, "./data/performance-clean.csv")
 
