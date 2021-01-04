@@ -6,40 +6,8 @@ library(caTools)
 df <- read.csv("./data/performance.csv",encoding = "UTF-8")
 print(head(df))
 
-### CLEANING
-
-# filtering NA
-df <- df[!is.na(df$age), ]
-df <- df[!is.na(df$X19.20.goals), ]
-df <- df[!is.na(df$X19.20.minutes), ]
-
-### DISTRIBUTIONS
-
-# extract mu/sigma
-mu <- summary(log(df$market.value))[4]
-sigma.2 <- var(log(df$market.value))
-hist((log(df$market.value)-mu)/sqrt(sigma.2))
-
-# goals distribution
-goals <- df$X19.20.goals[df$X19.20.goals != 0 & ! is.na(df$X19.20.goals)]
-
-par(mfrow=c(1,3))
-
-# histogram
-hist(log(goals))
-# qqplot
-qqnorm(log(goals))
-qqline(log(goals))
-# boxplot with CI's
-boxplot(log(goals))
-
-par(mfrow=c(1,1))
-
-# position distribution
-plot(df$position)
-
-# full pairwise correlation
-# pairs(df)
+# convert market.value to numeric
+df$market.value = as.numeric(as.character(df$market.value))
 
 
 ### MODELS + PREDICTIONS
@@ -49,15 +17,19 @@ split = sample.split(df$market.value, SplitRatio = 0.75)
 train = subset(df,split==TRUE)
 test = subset(df,split==FALSE)
 
-# generate simple glm model
-my.model <- glm(market.value~X19.20.goals+age+X19.20.minutes, family="gaussian", data=train)
+# remove NA
+for(col in colnames(df)){
+  df <- df[!is.na(df[col]), ]
+}
+
+# generate simple lm model
+hist(X19.20.minutes, freq = FALSE)
+my.model <- lm(log(market.value) ~ log(X20.21.goals+1) + X20.21.minutes +log(X19.20.goals+1)+age+X19.20.minutes
+                  +position+log(X18.19.goals+1)+X18.19.minutes+
+                   log(X17.18.goals+1)+X17.18.minutes+current.league+contract.expires, data=train)
 summary(my.model)
 
-# prediction test
-predictTrain = predict(my.model, type="response")
-
-# visualize prediction on train data
-par(mfrow=c(1,2))
-plot(train$market.value)
-plot(predictTrain)
-par(mfrow=c(1,2))
+# visualize model results
+par(mfrow=c(2,2))
+plot(my.model)
+par(mfrow=c(1,1))

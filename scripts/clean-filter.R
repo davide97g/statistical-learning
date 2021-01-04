@@ -2,8 +2,9 @@
 df <- read.csv("./data/performance.csv",encoding = "UTF-8")
 print(head(df))
 attach(df)
-
+# df['contract.expires.numeric'] = as.numeric(df[['contract.expires']])
 df$market.value = as.numeric(as.character(df$market.value))
+
 # filtering NA
 for(col in colnames(df)){
   df <- df[!is.na(df[col]), ]
@@ -15,10 +16,12 @@ df <- df[df$foot!='',]
 ### numeric
 # static attributes
 hist(df$age)
-hist(df$height)
+hist(df$height, breaks = 50)
 # typeof(df$height)
 df$market.value[1]
-hist(df$market.value)
+hist(log(df$market.value))
+qqnorm(log(df$market.value))
+qqline(log(df$market.value))
 # hist(df$contract.expires) # need to convert to numeric
 
 # season-related attributes 17/18
@@ -162,35 +165,62 @@ qqline(log(df$X19.20.yellows))
 par(mfrow=c(1,1))
 
 #  compare left/right foot
-right.foot <- df[df$foot=="right",]
+right.foot <- df[df$foot=="right" ,]
 left.foot <- df[df$foot=="left",]
+both.foot <- df[df$foot=="both",]
+
 hist(log(df$market.value), freq = FALSE)
 lines(density(log(df$market.value)))
-par(mfrow=c(2,2))
+
+par(mfrow=c(2,3))
 hist(log(right.foot$market.value), freq = FALSE)
 lines(density(log(right.foot$market.value)))
 hist(log(left.foot$market.value), freq = FALSE)
 lines(density(log(left.foot$market.value)))
+hist(log(both.foot$market.value), freq = FALSE)
+lines(density(log(both.foot$market.value)))
 qqnorm(log(right.foot$market.value))
 qqline(log(right.foot$market.value))
 qqnorm(log(left.foot$market.value))
 qqline(log(left.foot$market.value))
+qqnorm(log(both.foot$market.value))
+qqline(log(both.foot$market.value))
 par(mfrow=c(1,1))
 
 # overlap left/right foot market value distributions
 hist(log(right.foot$market.value), col=rgb(0,0,1,1/4), freq = FALSE)  # first histogram
 hist(log(left.foot$market.value), col=rgb(1,0,0,1/4), add=T, freq = FALSE)  # second
+hist(log(both.foot$market.value), col=rgb(1,0,0,2/4), add=T, freq = FALSE)  # second
 plot(density(log(right.foot$market.value)), col=rgb(0,0,1,1/4))  # first histogram
 lines(density(log(left.foot$market.value)), col=rgb(1,0,0,1/4))  # second
+lines(density(log(both.foot$market.value)), col=rgb(1,0,0,2/4))  # third
 # some summaries
 summary(right.foot$market.value)
 summary(left.foot$market.value)
 # hypothesis testing
 t.test(right.foot$market.value,left.foot$market.value)
+t.test(right.foot$market.value,both.foot$market.value)
+t.test(left.foot$market.value,both.foot$market.value)
 # p-value = 0.3708 > 0.05 ==> we cannot reject the null hypothesis : the two samples are drawn from the same distribution
 
 ### categorical
 plot(df$position)
 plot(df$foot)
-plot(df$current.league)
+
+# why only best 5 leagues
+plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
+
+plot(df$X19.20.games,df$X19.20.minutes)
+cor.test(df$X19.20.games,df$X19.20.minutes)
+summary(df$X19.20.games)
+summary(df$X19.20.minutes)
+
+ratio <- df$X19.20.minutes/df$X19.20.games
+summary(df$X19.20.minutes/summary(ratio)[3])
+t.test(df$X19.20.games,df$X19.20.minutes/summary(ratio)[3])
+
+ratio <- df$X18.19.minutes/df$X18.19.games
+summary(df$X18.19.minutes/summary(ratio)[3])
+t.test(df$X18.19.games,df$X18.19.minutes/summary(ratio)[3])
+
 
