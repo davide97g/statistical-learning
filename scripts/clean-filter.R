@@ -3,10 +3,12 @@ df <- read.csv("./data/performance-position.csv",encoding = "UTF-8")
 print(head(df))
 attach(df)
 
+df$market.value = as.numeric(as.character(df$market.value))
 # filtering NA
 for(col in colnames(df)){
   df <- df[!is.na(df[col]), ]
 }
+df <- df[df$foot!='',]
 
 # some distributions
 
@@ -159,8 +161,35 @@ qqnorm(log(df$X19.20.yellows))
 qqline(log(df$X19.20.yellows))
 par(mfrow=c(1,1))
 
-### categorical
+#  compare left/right foot
+right.foot <- df[df$foot=="right",]
+left.foot <- df[df$foot=="left",]
+hist(log(df$market.value), freq = FALSE)
+lines(density(log(df$market.value)))
+par(mfrow=c(2,2))
+hist(log(right.foot$market.value), freq = FALSE)
+lines(density(log(right.foot$market.value)))
+hist(log(left.foot$market.value), freq = FALSE)
+lines(density(log(left.foot$market.value)))
+qqnorm(log(right.foot$market.value))
+qqline(log(right.foot$market.value))
+qqnorm(log(left.foot$market.value))
+qqline(log(left.foot$market.value))
+par(mfrow=c(1,1))
 
+# overlap left/right foot market value distributions
+hist(log(right.foot$market.value), col=rgb(0,0,1,1/4), freq = FALSE)  # first histogram
+hist(log(left.foot$market.value), col=rgb(1,0,0,1/4), add=T, freq = FALSE)  # second
+plot(density(log(right.foot$market.value)), col=rgb(0,0,1,1/4))  # first histogram
+lines(density(log(left.foot$market.value)), col=rgb(1,0,0,1/4))  # second
+# some summaries
+summary(right.foot$market.value)
+summary(left.foot$market.value)
+# hypothesis testing
+t.test(right.foot$market.value,left.foot$market.value)
+# p-value = 0.3708 > 0.05 ==> we cannot reject the null hypothesis : the two samples are drawn from the same distribution
+
+### categorical
 plot(df$position)
 plot(df$foot)
 plot(df$current.league)
