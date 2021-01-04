@@ -39,7 +39,7 @@ if __name__ == "__main__":
     soup = scraper(LEAGUES_URL)
     LeagueTables = soup.find("table", class_="items").find("tbody")
     Leagues = LeagueTables.find_all("a", href=re.compile(
-        "wettbewerb/[A-Z]{2}1"), title=re.compile("\w"))
+        "wettbewerb/([A-Z]{2}|L)1"), title=re.compile("\w"))
     Leagues = Leagues[:N_LEAGUES]
     LeagueUrlDic = {league.text: BASE_URL +
                     league["href"] for league in Leagues}
