@@ -114,13 +114,55 @@ df[is.na(df$reds.18.19),'reds.18.19'] = 0
 df[is.na(df$reds.19.20),'reds.19.20'] = 0
 df[is.na(df$reds.20.21),'reds.20.21'] = 0
 
-# divide in subclasses
-hist(df$yellows.17.18)
-hist(df$second.yellows.17.18)
+###################################
+### TODO : Discretization cards ###
+###################################
 
-                                          ###################################
-                                          ### TODO : Discretization cards ###
-                                          ###################################
+# > 0 and == 0 make up to the total number of samples of our dataset
+dim(df[df$yellows.17.18>0,])[1]+dim(df[df$yellows.17.18==0,])[1]-dim(df)[1]
+
+# let's assign a categorical (logical) variable to each player:
+# - yellow.player.y1.y2 if yellows.y1.y2 > 0  = TRUE, FALSE otherwise
+
+df[df$yellows.17.18>0,'yellow.player.17.18']=TRUE
+df[df$yellows.17.18==0,'yellow.player.17.18']=FALSE
+
+df[df$yellows.18.19>0,'yellow.player.18.19']=TRUE
+df[df$yellows.18.19==0,'yellow.player.18.19']=FALSE
+
+df[df$yellows.19.20>0,'yellow.player.19.20']=TRUE
+df[df$yellows.19.20==0,'yellow.player.19.20']=FALSE
+
+df[df$yellows.20.21>0,'yellow.player.20.21']=TRUE
+df[df$yellows.20.21==0,'yellow.player.20.21']=FALSE
+
+# now for the second.yellows.y1.y2
+
+df[df$second.yellows.17.18>0,'orange.player.17.18']=TRUE
+df[df$second.yellows.17.18==0,'orange.player.17.18']=FALSE
+
+df[df$second.yellows.18.19>0,'orange.player.18.19']=TRUE
+df[df$second.yellows.18.19==0,'orange.player.18.19']=FALSE
+
+df[df$second.yellows.19.20>0,'orange.player.19.20']=TRUE
+df[df$second.yellows.19.20==0,'orange.player.19.20']=FALSE
+
+df[df$second.yellows.20.21>0,'orange.player.20.21']=TRUE
+df[df$second.yellows.20.21==0,'orange.player.20.21']=FALSE
+
+# and finally for the reds.y1.y2
+
+df[df$reds.17.18>0,'red.player.17.18']=TRUE
+df[df$reds.17.18==0,'red.player.17.18']=FALSE
+
+df[df$reds.18.19>0,'red.player.18.19']=TRUE
+df[df$reds.18.19==0,'red.player.18.19']=FALSE
+
+df[df$reds.19.20>0,'red.player.19.20']=TRUE
+df[df$reds.19.20==0,'red.player.19.20']=FALSE
+
+df[df$reds.20.21>0,'red.player.20.21']=TRUE
+df[df$reds.20.21==0,'red.player.20.21']=FALSE
 
 ### LEAGUES
 
@@ -191,5 +233,4 @@ for(col in columns.useless){
 #####################################
 
 # save the cleaned data frame to file 
-write.csv(df, "./data/performance-clean.csv")
-
+write.csv(df, "./data/performance-clean.csv",row.names=FALSE)

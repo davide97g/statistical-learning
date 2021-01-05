@@ -8,151 +8,153 @@ df <- read.csv("./data/performance-clean.csv",encoding = "UTF-8")
 # static attributes
 hist(df$age)
 hist(df$height, breaks = 50)
-# typeof(df$height)
-df$market.value[1]
+
 hist(log(df$market.value))
 qqnorm(log(df$market.value))
 qqline(log(df$market.value))
-# hist(df$contract.expires) # need to convert to numeric
+
+hist(df$contract.expires, breaks = 5) # not enough density of the data, maybe to convert to categorical 
 
 # season-related attributes 17/18
 par(mfrow=c(2,2))
-hist(df$X17.18.games, freq = FALSE)
-lines(density(df$X17.18.games))
-hist(df$X17.18.minutes, freq = FALSE)
-lines(density(df$X17.18.minutes))
-hist(df$X17.18.goals, freq = FALSE)
-lines(density(df$X17.18.goals))
-hist(df$X17.18.assists, freq = FALSE)
-lines(density(df$X17.18.assists))
+hist(df$games.17.18, freq = FALSE)
+lines(density(df$games.17.18))
+hist(df$minutes.17.18, freq = FALSE)
+lines(density(df$minutes.17.18))
+hist(df$goals.17.18, freq = FALSE)
+lines(density(df$goals.17.18))
+hist(df$assists.17.18, freq = FALSE)
+lines(density(df$assists.17.18))
 par(mfrow=c(1,1))
 
 # season-related attributes 18/19
 par(mfrow=c(2,2))
-hist(df$X18.19.games, freq = FALSE)
-lines(density(df$X18.19.games))
-hist(df$X18.19.minutes, freq = FALSE)
-lines(density(df$X18.19.minutes))
-hist(df$X18.19.goals, freq = FALSE)
-lines(density(df$X18.19.goals))
-hist(df$X18.19.assists, freq = FALSE)
-lines(density(df$X18.19.assists))
+hist(df$games.17.18, freq = FALSE)
+lines(density(df$games.17.18))
+hist(df$minutes.17.18, freq = FALSE)
+lines(density(df$minutes.17.18))
+hist(df$goals.17.18, freq = FALSE)
+lines(density(df$goals.17.18))
+hist(df$assists.17.18, freq = FALSE)
+lines(density(df$assists.17.18))
 par(mfrow=c(1,1))
-
 
 # season-related attributes 19/20
 par(mfrow=c(2,2))
-hist(df$X19.20.games, freq = FALSE)
-lines(density(df$X19.20.games))
-hist(df$X19.20.minutes, freq = FALSE)
-lines(density(df$X19.20.minutes))
-hist(df$X19.20.goals, freq = FALSE)
-lines(density(df$X19.20.goals))
-hist(df$X19.20.assists, freq = FALSE)
-lines(density(df$X19.20.assists))
+hist(df$games.17.18, freq = FALSE)
+lines(density(df$games.17.18))
+hist(df$minutes.17.18, freq = FALSE)
+lines(density(df$minutes.17.18))
+hist(df$goals.17.18, freq = FALSE)
+lines(density(df$goals.17.18))
+hist(df$assists.17.18, freq = FALSE)
+lines(density(df$assists.17.18))
 par(mfrow=c(1,1))
 
-
 # season-related attributes 20/21
-#par(mfrow=c(2,2))
-#hist(df$X20.21.games, freq = FALSE)
-#lines(density(df$X20.21.games))
-#hist(df$X20.21.minutes, freq = FALSE)
-#lines(density(df$X20.21.minutes))
-#hist(df$X20.21.goals, freq = FALSE)
-#lines(density(df$X20.21.goals))
-#hist(df$X20.21.assists, freq = FALSE)
-#lines(density(df$X20.21.assists))
-#par(mfrow=c(1,1))
+par(mfrow=c(2,2))
+hist(df$games.17.18, freq = FALSE)
+lines(density(df$games.17.18))
+hist(df$minutes.17.18, freq = FALSE)
+lines(density(df$minutes.17.18))
+hist(df$goals.17.18, freq = FALSE)
+lines(density(df$goals.17.18))
+hist(df$assists.17.18, freq = FALSE)
+lines(density(df$assists.17.18))
+par(mfrow=c(1,1))
+
+###################################
+# Same season, different features #
+###################################
 
 # comparing games between seasons
 par(mfrow=c(2,3))
-hist(df$X17.18.games, freq = FALSE)
-hist(df$X18.19.games, freq = FALSE)
-hist(df$X19.20.games, freq = FALSE)
-qqnorm(df$X17.18.games)
-qqline(df$X17.18.games)
-qqnorm(df$X18.19.games)
-qqline(df$X18.19.games)
-qqnorm(df$X19.20.games)
-qqline(df$X19.20.games)
+hist(df$games.17.18, freq = FALSE)
+hist(df$games.18.19, freq = FALSE)
+hist(df$games.19.20, freq = FALSE)
+qqnorm(df$games.17.18)
+qqline(df$games.17.18)
+qqnorm(df$games.18.19)
+qqline(df$games.18.19)
+qqnorm(df$games.19.20)
+qqline(df$games.19.20)
 par(mfrow=c(1,1))
-# NORMAL
+# GAMES => NORMAL
 
 
 # comparing goals between seasons
 par(mfrow=c(3,3))
-hist(df$X17.18.goals, freq = FALSE)
-hist(df$X18.19.goals, freq = FALSE)
-hist(df$X19.20.goals, freq = FALSE)
+hist(df$goals.17.18, freq = FALSE)
+hist(df$goals.18.19, freq = FALSE)
+hist(df$goals.19.20, freq = FALSE)
 # log transformation
-df <-  df[df$X17.18.goals!=0,]
-df <-  df[df$X18.19.goals!=0,]
-df <-  df[df$X19.20.goals!=0,]
-hist(log(df$X17.18.goals), freq = FALSE)
-hist(log(df$X18.19.goals), freq = FALSE)
-hist(log(df$X19.20.goals), freq = FALSE)
+df <-  df[df$goals.17.18!=0,]
+df <-  df[df$goals.18.19!=0,]
+df <-  df[df$goals.19.20!=0,]
+hist(log(df$goals.17.18), freq = FALSE)
+hist(log(df$goals.18.19), freq = FALSE)
+hist(log(df$goals.19.20), freq = FALSE)
 # normality check
-qqnorm(log(df$X17.18.goals))
-qqline(log(df$X17.18.goals))
-qqnorm(log(df$X18.19.goals))
-qqline(log(df$X18.19.goals))
-qqnorm(log(df$X19.20.goals))
-qqline(log(df$X19.20.goals))
+qqnorm(log(df$goals.17.18))
+qqline(log(df$goals.17.18))
+qqnorm(log(df$goals.18.19))
+qqline(log(df$goals.18.19))
+qqnorm(log(df$goals.19.20))
+qqline(log(df$goals.19.20))
 par(mfrow=c(1,1))
 # NOT SO NORMAL!
 
 # comparing assists between seasons
 par(mfrow=c(3,3))
-hist(df$X17.18.assists, freq = FALSE)
-hist(df$X18.19.assists, freq = FALSE)
-hist(df$X19.20.assists, freq = FALSE)
+hist(df$assists.17.18, freq = FALSE)
+hist(df$assists.18.19, freq = FALSE)
+hist(df$assists.19.20, freq = FALSE)
 # log transformation
-df <-  df[df$X17.18.assists!=0,]
-df <-  df[df$X18.19.assists!=0,]
-df <-  df[df$X19.20.assists!=0,]
-hist(log(df$X17.18.assists), freq = FALSE)
-hist(log(df$X18.19.assists), freq = FALSE)
-hist(log(df$X19.20.assists), freq = FALSE)
+df <-  df[df$assists.17.18!=0,]
+df <-  df[df$assists.18.19!=0,]
+df <-  df[df$assists.19.20!=0,]
+hist(log(df$assists.17.18), freq = FALSE)
+hist(log(df$assists.18.19), freq = FALSE)
+hist(log(df$assists.19.20), freq = FALSE)
 # normality check
-qqnorm(log(df$X17.18.assists))
-qqline(log(df$X17.18.assists))
-qqnorm(log(df$X18.19.assists))
-qqline(log(df$X18.19.assists))
-qqnorm(log(df$X19.20.assists))
-qqline(log(df$X19.20.assists))
+qqnorm(log(df$assists.17.18))
+qqline(log(df$assists.17.18))
+qqnorm(log(df$assists.18.19))
+qqline(log(df$assists.18.19))
+qqnorm(log(df$assists.19.20))
+qqline(log(df$assists.19.20))
 par(mfrow=c(1,1))
 # NOT SO NORMAL!
 
 # comparing minutes between seasons
 par(mfrow=c(2,3))
-hist(df$X17.18.minutes, freq = FALSE)
-hist(df$X18.19.minutes, freq = FALSE)
-hist(df$X19.20.minutes, freq = FALSE)
+hist(df$minutes.17.18, freq = FALSE)
+hist(df$minutes.18.19, freq = FALSE)
+hist(df$minutes.19.20, freq = FALSE)
 # normality check
-qqnorm(df$X17.18.minutes)
-qqline(df$X17.18.minutes)
-qqnorm(df$X18.19.minutes)
-qqline(df$X18.19.minutes)
-qqnorm(df$X19.20.minutes)
-qqline(df$X19.20.minutes)
+qqnorm(df$minutes.17.18)
+qqline(df$minutes.17.18)
+qqnorm(df$minutes.18.19)
+qqline(df$minutes.18.19)
+qqnorm(df$minutes.19.20)
+qqline(df$minutes.19.20)
 par(mfrow=c(1,1))
 # NORMAL!
 
 # yellows
 par(mfrow=c(2,3))
-df <- df[df$X17.18.yellows!=0,]
-df <- df[df$X18.19.yellows!=0,]
-df <- df[df$X19.20.yellows!=0,]
-hist(log(df$X17.18.yellows), freq=FALSE)
-hist(log(df$X18.19.yellows), freq=FALSE)
-hist(log(df$X19.20.yellows), freq=FALSE)
-qqnorm(log(df$X17.18.yellows))
-qqline(log(df$X17.18.yellows))
-qqnorm(log(df$X18.19.yellows))
-qqline(log(df$X18.19.yellows))
-qqnorm(log(df$X19.20.yellows))
-qqline(log(df$X19.20.yellows))
+df <- df[df$yellows.17.18!=0,]
+df <- df[df$yellows.18.19!=0,]
+df <- df[df$yellows.19.20!=0,]
+hist(log(df$yellows.17.18), freq=FALSE)
+hist(log(df$yellows.18.19), freq=FALSE)
+hist(log(df$yellows.19.20), freq=FALSE)
+qqnorm(log(df$yellows.17.18))
+qqline(log(df$yellows.17.18))
+qqnorm(log(df$yellows.18.19))
+qqline(log(df$yellows.18.19))
+qqnorm(log(df$yellows.19.20))
+qqline(log(df$yellows.19.20))
 par(mfrow=c(1,1))
 
 #  compare left/right foot
@@ -179,9 +181,9 @@ qqline(log(both.foot$market.value))
 par(mfrow=c(1,1))
 
 # overlap left/right foot market value distributions
-hist(log(right.foot$market.value), col=rgb(0,0,1,1/4), freq = FALSE)  # first histogram
-hist(log(left.foot$market.value), col=rgb(1,0,0,1/4), add=T, freq = FALSE)  # second
-hist(log(both.foot$market.value), col=rgb(1,0,0,2/4), add=T, freq = FALSE)  # second
+# hist(log(right.foot$market.value), col=rgb(0,0,1,1/4), freq = FALSE)  # first histogram
+# hist(log(left.foot$market.value), col=rgb(1,0,0,1/4), add=T, freq = FALSE)  # second
+# hist(log(both.foot$market.value), col=rgb(1,0,0,2/4), add=T, freq = FALSE)  # second
 plot(density(log(right.foot$market.value)), col=rgb(0,0,1,1/4))  # first histogram
 lines(density(log(left.foot$market.value)), col=rgb(1,0,0,1/4))  # second
 lines(density(log(both.foot$market.value)), col=rgb(1,0,0,2/4))  # third
@@ -195,21 +197,6 @@ t.test(left.foot$market.value,both.foot$market.value)
 # p-value = 0.3708 > 0.05 ==> we cannot reject the null hypothesis : the two samples are drawn from the same distribution
 
 ### categorical
-plot(df$position)
+boxplot(log(df$market.value)~df$offensive) # almost equal with the log transform
+hist(as.numeric(df$offensive), freq = FALSE)
 plot(df$foot)
-
-# why only best 5 leagues
-plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
-
-plot(df$X19.20.games,df$X19.20.minutes)
-cor.test(df$X19.20.games,df$X19.20.minutes)
-summary(df$X19.20.games)
-summary(df$X19.20.minutes)
-
-ratio <- df$X19.20.minutes/df$X19.20.games
-summary(df$X19.20.minutes/summary(ratio)[3])
-t.test(df$X19.20.games,df$X19.20.minutes/summary(ratio)[3])
-
-ratio <- df$X18.19.minutes/df$X18.19.games
-summary(df$X18.19.minutes/summary(ratio)[3])
-t.test(df$X18.19.games,df$X18.19.minutes/summary(ratio)[3])
