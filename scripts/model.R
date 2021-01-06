@@ -59,11 +59,52 @@ dim(high.price)[1] # very very few
 dim(super.price)[1] # too much
 # check it gives back the total
 dim(low.price)[1]+dim(medium.price)[1]+dim(high.price)[1]+dim(super.price)[1] - dim(df)[1] # should be 0 (zero)
+
 # create a new column to store the "price.class" feature
-df[df$market.value<q25,'price.class']="low"
-df[(df$market.value>=q25)&(df$market.value<q50),'price.class']="medium"
-df[(df$market.value>=q50)&(df$market.value<q75),'price.class']="high"
-df[df$market.value>=q75,'price.class']="super"
+df[df$market.value<q25,'price.class']=0
+df[(df$market.value>=q25)&(df$market.value<q50),'price.class']=1
+df[(df$market.value>=q50)&(df$market.value<q75),'price.class']=2
+df[df$market.value>=q75,'price.class']=3
 # transform to factor 
 df$price.class <- as.factor(df$price.class)
+# visual check 
 plot(df$price.class)
+
+
+### CREATE TRAIN/TEST SPLIT ###
+
+library(caTools)
+library(caret)
+
+set.seed(88)
+
+split = sample.split(df$market.value, SplitRatio = 0.9)
+
+training = subset(df, split == TRUE)
+testing = subset(df, split == FALSE)
+
+########## LINEAR DISCRIMINANT ANALISYS
+
+lda.model <- lda(price.class~
+                   age+offensive+
+                   contract.expires+current.league+
+                   games.17.18+log(assists.17.18+1)+
+                   games.18.19+minutes.18.19+
+                   games.19.20+
+                   games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1), 
+                 data = training)
+lda.model
+
+
+
+p1 <- predict(lda.model, training)$class
+tab <- table(Predicted = p1, Actual = training$price.class)
+tab
+sum(diag(tab))/sum(tab)
+
+# Confusion matrix and accuracy - testing data
+p2 <- predict(lda.model, testing)$class
+tab1 <- table(Predicted = p2, Actual = testing$price.class)
+tab1
+sum(diag(tab1))/sum(tab1)
+
