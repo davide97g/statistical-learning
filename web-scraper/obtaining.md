@@ -8,7 +8,7 @@ We obtained the raw data using `Beautiful Soup` in `Python`.
 
 > Feature list
 >
-> name | age | height | position | foot | current club | contract expires | market value
+> name | age | height | position | sub position | foot | current club | contract expires | market value
 >
 > 17/18 games | 17/18 goals | 17/18 assists | 17/18 yellows | 17/18 second yellows | 17/18 reds | 17/18 minutes
 >
@@ -22,10 +22,10 @@ We obtained the raw data using `Beautiful Soup` in `Python`.
 
 ## script
 
-- `main.py`
-- `league.py`
-- `team.py`
-- `player.py`
+- `main.py` access the website and extracts a list of the top N (=10) leagues and at the end, flattens the data and save everything into a `csv` file
+- `league.py` for every league extracts the list of teams
+- `team.py` for every team extracts the list of players filtering out the goalkeepers
+- `player.py` downloads the information of a single player: his personal attributes and for every season the relevant statistics
 
 ### main
 

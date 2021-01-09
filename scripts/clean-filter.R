@@ -55,7 +55,7 @@ df <- rename(df,minutes.19.20=X19.20.minutes)
 df <- rename(df,minutes.20.21=X20.21.minutes)
 
 ###############################
-### TYPE CHECK & CONVERSION ###
+### TYPE CHECK & CAST ###
 ###############################
 
 # type check 
@@ -118,51 +118,52 @@ df[is.na(df$reds.20.21),'reds.20.21'] = 0
 ### TODO : Discretization cards ###
 ###################################
 
-# > 0 and == 0 make up to the total number of samples of our dataset
-dim(df[df$yellows.17.18>0,])[1]+dim(df[df$yellows.17.18==0,])[1]-dim(df)[1]
-
 # let's assign a categorical (logical) variable to each player:
 # - yellow.player.y1.y2 if yellows.y1.y2 > 0  = TRUE, FALSE otherwise
 
-df[df$yellows.17.18>=3,'yellow.player.17.18']=TRUE
-df[df$yellows.17.18<3,'yellow.player.17.18']=FALSE
+t <- 3 # threshold
 
-df[df$yellows.18.19>=3,'yellow.player.18.19']=TRUE
-df[df$yellows.18.19<3,'yellow.player.18.19']=FALSE
+df[df$yellows.17.18>t,'yellow.player.17.18']=TRUE
+df[df$yellows.17.18<=t,'yellow.player.17.18']=FALSE
 
-df[df$yellows.19.20>=3,'yellow.player.19.20']=TRUE
-df[df$yellows.19.20<3,'yellow.player.19.20']=FALSE
+df[df$yellows.18.19>t,'yellow.player.18.19']=TRUE
+df[df$yellows.18.19<=t,'yellow.player.18.19']=FALSE
 
-df[df$yellows.20.21>0,'yellow.player.20.21']=TRUE
-df[df$yellows.20.21==0,'yellow.player.20.21']=FALSE
+df[df$yellows.19.20>t,'yellow.player.19.20']=TRUE
+df[df$yellows.19.20<=t,'yellow.player.19.20']=FALSE
+
+df[df$yellows.20.21>t,'yellow.player.20.21']=TRUE
+df[df$yellows.20.21<=t,'yellow.player.20.21']=FALSE
 
 # now for the second.yellows.y1.y2
+t <- 0 # threshold
 
-df[df$second.yellows.17.18>0,'orange.player.17.18']=TRUE
-df[df$second.yellows.17.18==0,'orange.player.17.18']=FALSE
+df[df$second.yellows.17.18>t,'orange.player.17.18']=TRUE
+df[df$second.yellows.17.18<=t,'orange.player.17.18']=FALSE
 
-df[df$second.yellows.18.19>0,'orange.player.18.19']=TRUE
-df[df$second.yellows.18.19==0,'orange.player.18.19']=FALSE
+df[df$second.yellows.18.19>t,'orange.player.18.19']=TRUE
+df[df$second.yellows.18.19<=t,'orange.player.18.19']=FALSE
 
-df[df$second.yellows.19.20>0,'orange.player.19.20']=TRUE
-df[df$second.yellows.19.20==0,'orange.player.19.20']=FALSE
+df[df$second.yellows.19.20>t,'orange.player.19.20']=TRUE
+df[df$second.yellows.19.20<=t,'orange.player.19.20']=FALSE
 
-df[df$second.yellows.20.21>0,'orange.player.20.21']=TRUE
-df[df$second.yellows.20.21==0,'orange.player.20.21']=FALSE
+df[df$second.yellows.20.21>t,'orange.player.20.21']=TRUE
+df[df$second.yellows.20.21<=t,'orange.player.20.21']=FALSE
 
 # and finally for the reds.y1.y2
+t <- 0 # threshold
 
-df[df$reds.17.18>0,'red.player.17.18']=TRUE
-df[df$reds.17.18==0,'red.player.17.18']=FALSE
+df[df$reds.17.18>t,'red.player.17.18']=TRUE
+df[df$reds.17.18<=t,'red.player.17.18']=FALSE
 
-df[df$reds.18.19>0,'red.player.18.19']=TRUE
-df[df$reds.18.19==0,'red.player.18.19']=FALSE
+df[df$reds.18.19>t,'red.player.18.19']=TRUE
+df[df$reds.18.19<=t,'red.player.18.19']=FALSE
 
-df[df$reds.19.20>0,'red.player.19.20']=TRUE
-df[df$reds.19.20==0,'red.player.19.20']=FALSE
+df[df$reds.19.20>t,'red.player.19.20']=TRUE
+df[df$reds.19.20<=t,'red.player.19.20']=FALSE
 
-df[df$reds.20.21>0,'red.player.20.21']=TRUE
-df[df$reds.20.21==0,'red.player.20.21']=FALSE
+df[df$reds.20.21>t,'red.player.20.21']=TRUE
+df[df$reds.20.21<=t,'red.player.20.21']=FALSE
 
 ### LEAGUES
 
@@ -194,6 +195,7 @@ plot(df$position)
 df[(df$position=="A")|(df$position=="CF"),"offensive"]=TRUE
 df[(df$position=="D")|(df$position=="M"),"offensive"]=FALSE
 hist(as.numeric(df$offensive), freq = FALSE)
+
 #########################################
 ### FILTER & REMOVE NA & USELESS DATA ###
 #########################################
