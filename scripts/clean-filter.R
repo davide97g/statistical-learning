@@ -1,5 +1,5 @@
 ##### 2. CLEAN & FILTER DATA ######
-install.packages("tidyverse")
+# install.packages("tidyverse")
 library(tidyverse)
 df <- read.csv("./data/performance.csv",encoding = "UTF-8")
 
@@ -124,14 +124,14 @@ dim(df[df$yellows.17.18>0,])[1]+dim(df[df$yellows.17.18==0,])[1]-dim(df)[1]
 # let's assign a categorical (logical) variable to each player:
 # - yellow.player.y1.y2 if yellows.y1.y2 > 0  = TRUE, FALSE otherwise
 
-df[df$yellows.17.18>0,'yellow.player.17.18']=TRUE
-df[df$yellows.17.18==0,'yellow.player.17.18']=FALSE
+df[df$yellows.17.18>=3,'yellow.player.17.18']=TRUE
+df[df$yellows.17.18<3,'yellow.player.17.18']=FALSE
 
-df[df$yellows.18.19>0,'yellow.player.18.19']=TRUE
-df[df$yellows.18.19==0,'yellow.player.18.19']=FALSE
+df[df$yellows.18.19>=3,'yellow.player.18.19']=TRUE
+df[df$yellows.18.19<3,'yellow.player.18.19']=FALSE
 
-df[df$yellows.19.20>0,'yellow.player.19.20']=TRUE
-df[df$yellows.19.20==0,'yellow.player.19.20']=FALSE
+df[df$yellows.19.20>=3,'yellow.player.19.20']=TRUE
+df[df$yellows.19.20<3,'yellow.player.19.20']=FALSE
 
 df[df$yellows.20.21>0,'yellow.player.20.21']=TRUE
 df[df$yellows.20.21==0,'yellow.player.20.21']=FALSE
