@@ -4,13 +4,106 @@ library(caret)
 
 df <- read.csv("./data/performance-clean.csv",encoding = "UTF-8")
 
-head(df)
+# df <- df[df$position=="A",] # enhance the results by dividing dataset in A/D
 
+################################# MODEL TESTS #################################
+
+# # feature selection based on significance levels
+# lm.model <- lm(formula= market.value ~
+#                  age+position+sub.position+
+#                  contract.expires+current.league+
+#                  games.17.18+log(assists.17.18+1)+
+#                  games.18.19+minutes.18.19+
+#                  games.19.20+
+#                  games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)
+#                ,data=df)
+# summary(lm.model) # ~ Adjusted R-squared: 0.6506
+# # visualize model results
+# 
+# par(mfrow=c(2,2))
+# plot(lm.model)
+# par(mfrow=c(1,1))
+
+### TEST 1
+# model only year 20/21
+lm.model <- lm(formula= market.value ~
+                 age+offensive+sub.position+
+                 contract.expires+current.league+
+                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+               ,data=df)
+summary(lm.model) # ~ Adjusted R-squared: 0.568
+# visualize model results
+par(mfrow=c(2,2))
+plot(lm.model)
+mtext("Model 1: years 20/21", side = 3, line = -28, outer = TRUE)
+par(mfrow=c(1,1))
+
+
+### TEST 2
 # convert response variable to log
 df$market.value <- log(df$market.value)
 
-df <- df[df$position=="A",]
+lm.model <- lm(formula= market.value ~
+                 age+offensive+sub.position+
+                 contract.expires+current.league+
+                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+               ,data=df)
+summary(lm.model) # ~ Adjusted R-squared: 0.568
+# visualize model results
+par(mfrow=c(2,2))
+plot(lm.model)
+mtext("Model 2: log(market.value) + years 20/21", side = 3, line = -28, outer = TRUE)
+par(mfrow=c(1,1))
 
+### TEST 3
+# model years 20/21+19/20
+lm.model <- lm(formula= market.value ~
+                 age+offensive+sub.position+
+                 contract.expires+current.league+
+                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
+                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+               ,data=df)
+summary(lm.model) # ~ Adjusted R-squared: 0.613
+# visualize model results
+par(mfrow=c(2,2))
+plot(lm.model)
+mtext("Model 3: log(market.value) + years 20/21+19/20", side = 3, line = -28, outer = TRUE)
+par(mfrow=c(1,1))
+
+### TEST 4
+# years: 20/21 + 19/20 + 18/19
+lm.model <- lm(formula= market.value ~
+                 age+offensive+sub.position+
+                 contract.expires+current.league+
+                 games.18.19+log(goals.18.19+1)+minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
+                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
+                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+               ,data=df)
+summary(lm.model) # ~ Adjusted R-squared: 0.6413
+# visualize model results
+par(mfrow=c(2,2))
+plot(lm.model)
+mtext("Model 4: log(market.value) + years 20/21+19/20+18/19", side = 3, line = -28, outer = TRUE)
+par(mfrow=c(1,1))
+
+### TEST 5
+# years: 20/21 + 19/20 + 18/19 + 17/18
+lm.model <- lm(formula= market.value ~
+                 age+sub.position+
+                 contract.expires+current.league+
+                 games.17.18+log(goals.17.18+1)+minutes.17.18+log(assists.17.18+1)+yellow.player.17.18+orange.player.17.18+red.player.17.18+
+                 games.18.19+log(goals.18.19+1)+minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
+                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
+                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+               ,data=df)
+summary(lm.model) # ~ Adjusted R-squared: 0.6528
+# visualize model results
+par(mfrow=c(2,2))
+plot(lm.model)
+mtext("Model 5: log(market.value) + years 20/21+19/20+18/19+17/18", side = 3, line = -28, outer = TRUE)
+par(mfrow=c(1,1))
+
+################################# REGRESSION ON TRAINING SET #################################
 
 ### CREATE TRAIN/TEST SPLIT ###
 
@@ -20,46 +113,7 @@ split = sample.split(df$market.value, SplitRatio = 0.75)
 training = subset(df, split == TRUE)
 testing = subset(df, split == FALSE)
 
-################################# REGRESSION #################################
-
-# feature selection based on significance levels
-lm.model <- lm(formula= market.value ~
-                 age+position+sub.position+
-                 contract.expires+current.league+
-                 games.17.18+log(assists.17.18+1)+
-                 games.18.19+minutes.18.19+
-                 games.19.20+
-                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)
-               ,data=training)
-summary(lm.model) # ~ Adjusted R-squared: 0.6506
-
-# model only year 20/21
-lm.model <- lm(formula= market.value ~
-                 age+offensive+sub.position+
-                 contract.expires+current.league+
-                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
-               ,data=training)
-summary(lm.model) # ~ Adjusted R-squared: 0.568
-
-# model years 20/21+19/20
-lm.model <- lm(formula= market.value ~
-                 age+offensive+sub.position+
-                 contract.expires+current.league+
-                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
-                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
-               ,data=training)
-summary(lm.model) # ~ Adjusted R-squared: 0.613
-
-# years: 20/21 + 19/20 + 18/19
-lm.model <- lm(formula= market.value ~
-                 age+offensive+sub.position+
-                 contract.expires+current.league+
-                 games.18.19+log(goals.18.19+1)+minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
-                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
-                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
-               ,data=training)
-summary(lm.model) # ~ Adjusted R-squared: 0.6413
-
+# Here we use the best model found so far
 # years: 20/21 + 19/20 + 18/19 + 17/18
 lm.model <- lm(formula= market.value ~
                  age+sub.position+
@@ -71,13 +125,7 @@ lm.model <- lm(formula= market.value ~
                ,data=training)
 summary(lm.model) # ~ Adjusted R-squared: 0.6528
 
-# visualize model results
-
-par(mfrow=c(2,2))
-plot(lm.model)
-par(mfrow=c(1,1))
-
-################################# PREDICTION #################################
+################################# PREDICTION ON TEST SET #################################
 
 ## use the predicted values of the model and save a new feature to the model
 testing['market.value.predicted'] <- predict(lm.model, newdata = testing)
@@ -137,6 +185,7 @@ get.accuracy <- function(training,testing,percentages,price.class.names){
   print(paste("Accuracy =",round(sum(diag(cm))/sum(cm)*10000)/100,"%"))
 }
 
+get.accuracy(training,testing,c(.25,.50,.75),c("low","medium","high","super"))
 get.accuracy(training,testing,c(.33,.66),c("low","medium","high"))
 
 
