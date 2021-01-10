@@ -75,8 +75,8 @@ typeof(df$minutes.17.18) # double
 ### MARKET.VALUE
 # need to cast this feature to integer for later development
 typeof(df$market.value)
-hist(df$market.value) # ! this fails: not recognized as numeric
-df$market.value = as.integer(as.character(df$market.value)) # cast to character and then to integer
+# hist(df$market.value) # ! this fails: not recognized as numeric
+df$market.value <-  as.integer(as.character(df$market.value)) # cast to character and then to integer
 df <- df[!is.na(df$market.value),] # remove the NA produces by casting to integer the "-" values
 typeof(df$market.value) # now I have integer type
 hist(log(df$market.value)) # now it works
@@ -119,49 +119,47 @@ df[is.na(df$reds.20.21),'reds.20.21'] = 0
 ###################################
 
 # let's assign a categorical (logical) variable to each player:
-# - yellow.player.y1.y2 if yellows.y1.y2 > 0  = TRUE, FALSE otherwise
+# - yellow.player.y1.y2 if yellows.y1.y2 > median(yellows.y1.y2)  = TRUE, FALSE otherwise
 
-t <- 3 # threshold
-
+t <- summary(df$yellows.17.18)[[3]]
 df[df$yellows.17.18>t,'yellow.player.17.18']=TRUE
 df[df$yellows.17.18<=t,'yellow.player.17.18']=FALSE
-
+t <- summary(df$yellows.18.19)[[3]]
 df[df$yellows.18.19>t,'yellow.player.18.19']=TRUE
 df[df$yellows.18.19<=t,'yellow.player.18.19']=FALSE
-
+t <- summary(df$yellows.19.20)[[3]]
 df[df$yellows.19.20>t,'yellow.player.19.20']=TRUE
 df[df$yellows.19.20<=t,'yellow.player.19.20']=FALSE
-
+t <- summary(df$yellows.20.21)[[3]]
 df[df$yellows.20.21>t,'yellow.player.20.21']=TRUE
 df[df$yellows.20.21<=t,'yellow.player.20.21']=FALSE
 
 # now for the second.yellows.y1.y2
-t <- 0 # threshold
 
+t <- summary(df$second.yellows.17.18)[[3]]
 df[df$second.yellows.17.18>t,'orange.player.17.18']=TRUE
 df[df$second.yellows.17.18<=t,'orange.player.17.18']=FALSE
-
+t <- summary(df$second.yellows.18.19)[[3]]
 df[df$second.yellows.18.19>t,'orange.player.18.19']=TRUE
 df[df$second.yellows.18.19<=t,'orange.player.18.19']=FALSE
-
+t <- summary(df$second.yellows.19.20)[[3]]
 df[df$second.yellows.19.20>t,'orange.player.19.20']=TRUE
 df[df$second.yellows.19.20<=t,'orange.player.19.20']=FALSE
-
+t <- summary(df$second.yellows.20.21)[[3]]
 df[df$second.yellows.20.21>t,'orange.player.20.21']=TRUE
 df[df$second.yellows.20.21<=t,'orange.player.20.21']=FALSE
 
 # and finally for the reds.y1.y2
-t <- 0 # threshold
-
+t <- summary(df$reds.17.18)[[3]]
 df[df$reds.17.18>t,'red.player.17.18']=TRUE
 df[df$reds.17.18<=t,'red.player.17.18']=FALSE
-
+t <- summary(df$reds.18.19)[[3]]
 df[df$reds.18.19>t,'red.player.18.19']=TRUE
 df[df$reds.18.19<=t,'red.player.18.19']=FALSE
-
+t <- summary(df$reds.19.20)[[3]]
 df[df$reds.19.20>t,'red.player.19.20']=TRUE
 df[df$reds.19.20<=t,'red.player.19.20']=FALSE
-
+t <- summary(df$reds.20.21)[[3]]
 df[df$reds.20.21>t,'red.player.20.21']=TRUE
 df[df$reds.20.21<=t,'red.player.20.21']=FALSE
 
@@ -230,9 +228,42 @@ for(col in columns.useless){
   print(paste("removed useless data from",col))
 }
 
+##############################
+### NORMALIZE NUMERIC DATA ###
+##############################
+normalize <- function(data){
+  mu <- summary(data)[[4]]
+  sigma <- sqrt(var(data))
+  data <- (data-mu)/sigma
+  return (data)
+}
+
+
+df$age <- normalize(df$age)
+df$height <- normalize(df$height)
+df$contract.expires <- normalize(df$contract.expires)
+
+df$games.17.18 <- normalize(df$games.17.18)
+df$goals.17.18 <- normalize(df$goals.17.18)
+df$assists.17.18 <- normalize(df$assists.17.18)
+# 
+df$games.18.19 <- normalize(df$games.18.19)
+df$goals.18.19 <- normalize(df$goals.18.19)
+df$assists.18.19 <- normalize(df$assists.18.19)
+
+df$games.19.20 <- normalize(df$games.19.20)
+df$goals.19.20 <- normalize(df$goals.19.20)
+df$assists.19.20 <- normalize(df$assists.19.20)
+
+df$games.20.21 <- normalize(df$games.20.21)
+df$goals.20.21 <- normalize(df$goals.20.21)
+df$assists.20.21 <- normalize(df$assists.20.21)
+
 #####################################
 ### SAVE CLEAN DATA FRAME TO FILE ###
 #####################################
 
 # save the cleaned data frame to file 
 write.csv(df, "./data/performance-clean.csv",row.names=FALSE)
+
+

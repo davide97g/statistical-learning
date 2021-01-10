@@ -9,11 +9,13 @@ head(df)
 # convert response variable to log
 df$market.value <- log(df$market.value)
 
+df <- df[df$position=="A",]
+
 
 ### CREATE TRAIN/TEST SPLIT ###
 
-set.seed(100)
-split = sample.split(df$market.value, SplitRatio = 0.8)
+set.seed(55)
+split = sample.split(df$market.value, SplitRatio = 0.75)
 
 training = subset(df, split == TRUE)
 testing = subset(df, split == FALSE)
@@ -22,7 +24,7 @@ testing = subset(df, split == FALSE)
 
 # feature selection based on significance levels
 lm.model <- lm(formula= market.value ~
-                 age+offensive+sub.position+
+                 age+position+sub.position+
                  contract.expires+current.league+
                  games.17.18+log(assists.17.18+1)+
                  games.18.19+minutes.18.19+
@@ -60,7 +62,7 @@ summary(lm.model) # ~ Adjusted R-squared: 0.6413
 
 # years: 20/21 + 19/20 + 18/19 + 17/18
 lm.model <- lm(formula= market.value ~
-                 age+offensive+sub.position+
+                 age+sub.position+
                  contract.expires+current.league+
                  games.17.18+log(goals.17.18+1)+minutes.17.18+log(assists.17.18+1)+yellow.player.17.18+orange.player.17.18+red.player.17.18+
                  games.18.19+log(goals.18.19+1)+minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
@@ -79,18 +81,17 @@ par(mfrow=c(1,1))
 
 ## use the predicted values of the model and save a new feature to the model
 testing['market.value.predicted'] <- predict(lm.model, newdata = testing)
-par(mfrow=c(1,2))
-hist(testing$market.value)
-hist(testing$market.value.predicted)
-par(mfrow=c(1,1))
 
-summary(testing$market.value)
-summary(testing$market.value.predicted)
+hist(testing$market.value,breaks = pretty(10:20, n = 10), freq = FALSE, col=(rgb(0,0,255, max = 255, alpha = 100)), main="Market value vs Predicted")
+hist(testing$market.value.predicted,breaks = pretty(10:20, n = 10), freq = FALSE, add=T, col=(rgb(255,0,0, max = 255, alpha = 100)))
+
+summary(testing$market.value)-summary(testing$market.value.predicted) # low values => similar around the mean, diverge in min/max
 
 ################################# CLASSIFICATION #################################
 
 get.accuracy <- function(training,testing,percentages,price.class.names){
   quantiles <- quantile(training$market.value,percentages)
+  print("Percentiles used:")
   print(quantiles)
   N <- length(quantiles)+1
   # create the "price.class" feature for the test set
@@ -113,8 +114,8 @@ get.accuracy <- function(training,testing,percentages,price.class.names){
   testing$price.class.predicted <- as.factor(testing$price.class.predicted)
   
   par(mfrow=c(1,2))
-  plot(testing$price.class)
-  plot(testing$price.class.predicted)
+  plot(testing$price.class,col=(rgb(0,0,255, max = 255, alpha = 100)), main="Price Class")
+  plot(testing$price.class.predicted,col=(rgb(255,0,0, max = 255, alpha = 100)),main="Price Class Predicted")
   par(mfrow=c(1,1))
   
   
@@ -123,24 +124,20 @@ get.accuracy <- function(training,testing,percentages,price.class.names){
   cm <- matrix(0,nrow=N,ncol=N)
   rownames(cm) <- price.class.names
   colnames(cm) <- price.class.names
-  cm
   for(p1 in price.class){
-    # print(paste("p1",p1))
     for(p2 in price.class){
-      # print(paste("p2",p2))
-      # x <- dim(testing[(testing$price.class==p1) & (testing$price.class.predicted==p2),])[1]
-      # print(x)
       cm[p1,p2] <- dim(testing[(testing$price.class==p1) & (testing$price.class.predicted==p2),])[1]
     }
   }
   
   # visualize results
+  print(paste("Confusion Matrix (", dim(testing)[1] ,"istances )"))
   print(cm)
   # calculate accuracy
-  return (sum(diag(cm))/sum(cm)*100)
+  print(paste("Accuracy =",round(sum(diag(cm))/sum(cm)*10000)/100,"%"))
 }
 
-get.accuracy(training,testing,c(.30,.70),c("low","medium","high"))
+get.accuracy(training,testing,c(.33,.66),c("low","medium","high"))
 
 
 ########## LINEAR DISCRIMINANT ANALISYS
