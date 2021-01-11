@@ -4,7 +4,21 @@ library(caret)
 
 df <- read.csv("./data/performance-clean.csv",encoding = "UTF-8")
 
-# df <- df[df$position=="A",] # enhance the results by dividing dataset in A/D
+# df <- df[df$position=="D",] # enhance the results by dividing dataset in A/D
+par(mfrow=c(2,4))
+hist(log(df$market.value))
+hist(log(df[log(df$market.value)>10,'market.value']))
+hist(log(1/df$market.value))
+hist(1/log(df$market.value))
+qqnorm(log(df$market.value))
+qqline(log(df$market.value))
+qqnorm(log(df[log(df$market.value)>10,'market.value']))
+qqline(log(df[log(df$market.value)>10,'market.value']))
+qqnorm(log(1/df$market.value))
+qqline(log(1/df$market.value))
+qqnorm(1/log(df$market.value))
+qqline(1/log(df$market.value))
+par(mfrow=c(1,1))
 
 ################################# MODEL TESTS #################################
 
@@ -19,7 +33,7 @@ df <- read.csv("./data/performance-clean.csv",encoding = "UTF-8")
 #                ,data=df)
 # summary(lm.model) # ~ Adjusted R-squared: 0.6506
 # # visualize model results
-# 
+#
 # par(mfrow=c(2,2))
 # plot(lm.model)
 # par(mfrow=c(1,1))
@@ -42,7 +56,6 @@ par(mfrow=c(1,1))
 ### TEST 2
 # convert response variable to log
 df$market.value <- log(df$market.value)
-
 lm.model <- lm(formula= market.value ~
                  age+offensive+sub.position+
                  contract.expires+current.league+
@@ -54,6 +67,7 @@ par(mfrow=c(2,2))
 plot(lm.model)
 mtext("Model 2: log(market.value) + years 20/21", side = 3, line = -28, outer = TRUE)
 par(mfrow=c(1,1))
+
 
 ### TEST 3
 # model years 20/21+19/20
@@ -91,10 +105,10 @@ par(mfrow=c(1,1))
 lm.model <- lm(formula= market.value ~
                  age+sub.position+
                  contract.expires+current.league+
-                 games.17.18+log(goals.17.18+1)+minutes.17.18+log(assists.17.18+1)+yellow.player.17.18+orange.player.17.18+red.player.17.18+
-                 games.18.19+log(goals.18.19+1)+minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
-                 games.19.20+log(goals.19.20+1)+minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
-                 games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
+                 games.17.18*log(goals.17.18+1)*minutes.17.18+log(assists.17.18+1)+yellow.player.17.18+orange.player.17.18+red.player.17.18+
+                 games.18.19*log(goals.18.19+1)*minutes.18.19+log(assists.18.19+1)+yellow.player.18.19+orange.player.18.19+red.player.18.19+
+                 games.19.20*log(goals.19.20+1)*minutes.19.20+log(assists.19.20+1)+yellow.player.19.20+orange.player.19.20+red.player.19.20+
+                 games.20.21*log(goals.20.21+1)*minutes.20.21+log(assists.20.21+1)+yellow.player.20.21+orange.player.20.21+red.player.20.21
                ,data=df)
 summary(lm.model) # ~ Adjusted R-squared: 0.6528
 # visualize model results
@@ -102,6 +116,15 @@ par(mfrow=c(2,2))
 plot(lm.model)
 mtext("Model 5: log(market.value) + years 20/21+19/20+18/19+17/18", side = 3, line = -28, outer = TRUE)
 par(mfrow=c(1,1))
+
+
+
+############### REMOVE HLP (HIGH LEVERAGE POINTS)
+### remove very high leverage points
+lm.model <- step(lm.model,steps=20,trace=0,direction = "backward")
+
+dim(df)[1]-length(hatvalues(lm.model))
+df <- df[hatvalues(lm.model) <= 3 * mean(hatvalues(lm.model)),]
 
 ################################# REGRESSION ON TRAINING SET #################################
 
@@ -125,12 +148,30 @@ lm.model <- lm(formula= market.value ~
                ,data=training)
 summary(lm.model) # ~ Adjusted R-squared: 0.6528
 
+par(mfrow=c(2,2))
+plot(lm.model)
+par(mfrow=c(1,1))
+
+# backward variable selection
+lm.model <- step(lm.model,steps=20,trace=0,direction = "backward")
+summary(lm.model) # ~ Adjusted R-squared: 0.6528
+
+par(mfrow=c(2,2))
+plot(lm.model)
+par(mfrow=c(1,1))
+
+lm.model$xlevels[[1]]
+levels(testing$sub.position)
+# reset the lost levels on sub.position ??
+lm.model$xlevels[[1]] <- levels(testing$sub.position)
+lm.model$xlevels[[1]]
+levels(testing$sub.position)
 ################################# PREDICTION ON TEST SET #################################
 
 ## use the predicted values of the model and save a new feature to the model
 testing['market.value.predicted'] <- predict(lm.model, newdata = testing)
 
-hist(testing$market.value,breaks = pretty(10:20, n = 10), freq = FALSE, col=(rgb(0,0,255, max = 255, alpha = 100)), main="Market value vs Predicted")
+hist(testing$market.value,breaks = pretty(10:20,n = 10), freq = FALSE, col=(rgb(0,0,255, max = 255, alpha = 100)), main="Market value vs Predicted")
 hist(testing$market.value.predicted,breaks = pretty(10:20, n = 10), freq = FALSE, add=T, col=(rgb(255,0,0, max = 255, alpha = 100)))
 
 summary(testing$market.value)-summary(testing$market.value.predicted) # low values => similar around the mean, diverge in min/max
@@ -187,30 +228,3 @@ get.accuracy <- function(training,testing,percentages,price.class.names){
 
 get.accuracy(training,testing,c(.25,.50,.75),c("low","medium","high","super"))
 get.accuracy(training,testing,c(.33,.66),c("low","medium","high"))
-
-
-########## LINEAR DISCRIMINANT ANALISYS
-# 
-# lda.model <- lda(price.class~
-#                    age+offensive+
-#                    contract.expires+current.league+
-#                    games.17.18+log(assists.17.18+1)+
-#                    games.18.19+minutes.18.19+
-#                    games.19.20+
-#                    games.20.21+log(goals.20.21+1)+minutes.20.21+log(assists.20.21+1), 
-#                  data = training)
-# lda.model
-# 
-# 
-# 
-# p1 <- predict(lda.model, training)$class
-# tab <- table(Predicted = p1, Actual = training$price.class)
-# tab
-# sum(diag(tab))/sum(tab)
-# 
-# # Confusion matrix and accuracy - testing data
-# p2 <- predict(lda.model, testing)$class
-# tab1 <- table(Predicted = p2, Actual = testing$price.class)
-# tab1
-# sum(diag(tab1))/sum(tab1)
-
