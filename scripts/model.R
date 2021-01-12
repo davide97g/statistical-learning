@@ -86,9 +86,40 @@ plot(lm.model)
 mtext("Model 4: log(market.value) + years 20/21+19/20+18/19+17/18", side = 3, line = -28, outer = TRUE)
 par(mfrow=c(1,1))
 
-### WHY WE AGGREGATE 
-# inconsistency in p-values in various features of the same years and between years.
-# TODO
+### FEATURES DIAGNOSTIC
+# PROBLEM
+# From the previous model we observed some problems with the features: some were not statistically significant
+# in one particular year, but in another one they were. For example:
+# - games.20.21 ***
+# - goals.20.21 ***
+# - minutes.20.21 ***
+# - assists.20.21 ***
+# But... of the 19/20 features, only "games" was significant
+# - games.19.20 ***
+# - goals.19.20 
+# - minutes.19.20
+# - assists.19.20 
+# Moreover, looking at the year 18/19 we observe different significance levels
+# - games.18.19 ***
+# - goals.18.19  
+# - minutes.18.19 ** 
+# - assists.18.19 *
+
+# POSSIBLE SOLUTION
+# If we wanted to select only some features what would we choose? There are different answers for each year.
+# But, as we inspected in "explore.py", these features have very similar distributions and should influence the model 
+# in a coordinate way, or at least be coherent between years.
+# In order to overcome this problem we tried to aggregate these seasonal feature in one unique feature for all the available years.
+# Precisely, for each seasonal feature we created a new global feature that would contain the sum of all the data over the years of that feature.
+# Ex: games <= games.17.18 + games.18.19 + games.19.20 + games.20.21
+
+# STRATEGY & REASONING
+# We reckon this procedure is safe and sound because:
+# - reduce inconsistency between seasonal features
+# - remove temporality in our dataset: aggregating every seasonal feature we remove the time dependecy of different years
+# - reduce the number of parameters of our model: less overfitted and more easy to interpret
+# - eliminate possible dependency between seasonal attributes over the years (performance in previous years influence the next year's performance?)
+# - accumulates more data per feature (i.e: the card features were very scattered, aggregating, they become more relaiable and continuous)
 
 ### TEST 5
 # In this model every seasonal feature (games, goals, ..., yellows,...) is condensed in one unique feature. 
