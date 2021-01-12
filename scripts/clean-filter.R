@@ -1,5 +1,5 @@
 ##### 2. CLEAN & FILTER DATA ######
-# install.packages("tidyverse")
+
 library(tidyverse)
 df <- read.csv("./data/performance.csv",encoding = "UTF-8")
 
@@ -53,6 +53,9 @@ df <- rename(df,minutes.17.18=X17.18.minutes)
 df <- rename(df,minutes.18.19=X18.19.minutes)
 df <- rename(df,minutes.19.20=X19.20.minutes)
 df <- rename(df,minutes.20.21=X20.21.minutes)
+
+# cleaner names
+names(df)
 
 ###############################
 ### TYPE CHECK & CAST ###
@@ -115,7 +118,7 @@ df[is.na(df$reds.19.20),'reds.19.20'] = 0
 df[is.na(df$reds.20.21),'reds.20.21'] = 0
 
 ###################################
-### TODO : Discretization cards ###
+### Discretization cards ###
 ###################################
 
 # let's assign a categorical (logical) variable to each player:
@@ -166,7 +169,8 @@ df[df$reds.20.21<=t,'red.player.20.21']=FALSE
 ### LEAGUES
 
 # if we aggregate by league and sum over the market.value we get the following results
-plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
+par(mfrow=c(1,2))
+plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum), main="Total Market Value accross the Leagues",xlab="Leagues",ylab="Total Market Value")
 
 # As we can see, there is a high difference between major leagues and the "others"
 # for this reasons we decided to put the lower in just one class called "other"
@@ -184,11 +188,13 @@ df[(df$current.league=="Eredivisie")|
 df$current.league <- as.factor(df$current.league) # bring the factors back
 # Now the "Other" factor is well balanced with the other major leagues in terms of market.value
 # and we have reduced the complexity of handling small differences between low leagues
-plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum))
+plot(aggregate(df$market.value, by=list(Category=df$current.league), FUN=sum), main="Total Market Value accross the Leagues",xlab="Leagues",ylab="Total Market Value")
+par(mfrow=c(1,1))
 
 ### Merge positions A+CF & D+M
 # offensive and difensive player are classified with differently, maybe the right path should be to create
-# separate models for "A" (attackers/offensive) and "D" (defensive) players.
+# separate models for "A" (attackers/offensive) and "D" (defensive) players. 
+# For now we create a new logical variable to store if a player is offensive.
 plot(df$position)
 df[(df$position=="A")|(df$position=="CF"),"offensive"]=TRUE
 df[(df$position=="D")|(df$position=="M"),"offensive"]=FALSE
@@ -228,36 +234,21 @@ for(col in columns.useless){
   print(paste("removed useless data from",col))
 }
 
-##############################
-### NORMALIZE NUMERIC DATA ###
-##############################
-normalize <- function(data){
-  mu <- summary(data)[[4]]
-  sigma <- sqrt(var(data))
-  data <- (data-mu)/sigma
-  return (data)
-}
 
+########################################
+### AGGREGATION OF SEASONAL FEATURES ###
+########################################
 
-df$age <- normalize(df$age)
-df$height <- normalize(df$height)
-df$contract.expires <- normalize(df$contract.expires)
+### sum every seasonal data 
+df['goals'] <- df$goals.17.18+df$goals.18.19+df$goals.19.20+df$goals.20.21
+df['games'] <- df$games.17.18+df$games.18.19+df$games.19.20+df$games.20.21
+df['minutes'] <- df$minutes.17.18+df$minutes.18.19+df$minutes.19.20+df$minutes.20.21
+df['assists'] <- df$assists.17.18+df$assists.18.19+df$assists.19.20+df$assists.20.21
+# cards
+df['yellow'] <- df$yellows.17.18+df$yellows.18.19+df$yellows.19.20+df$yellows.20.21
+df['orange'] <- df$second.yellows.17.18+df$second.yellows.18.19+df$second.yellows.19.20+df$second.yellows.20.21
+df['red'] <- df$reds.17.18+df$reds.18.19+df$reds.19.20+df$reds.20.21
 
-df$games.17.18 <- normalize(df$games.17.18)
-df$goals.17.18 <- normalize(df$goals.17.18)
-df$assists.17.18 <- normalize(df$assists.17.18)
-# 
-df$games.18.19 <- normalize(df$games.18.19)
-df$goals.18.19 <- normalize(df$goals.18.19)
-df$assists.18.19 <- normalize(df$assists.18.19)
-
-df$games.19.20 <- normalize(df$games.19.20)
-df$goals.19.20 <- normalize(df$goals.19.20)
-df$assists.19.20 <- normalize(df$assists.19.20)
-
-df$games.20.21 <- normalize(df$games.20.21)
-df$goals.20.21 <- normalize(df$goals.20.21)
-df$assists.20.21 <- normalize(df$assists.20.21)
 
 #####################################
 ### SAVE CLEAN DATA FRAME TO FILE ###
@@ -265,5 +256,3 @@ df$assists.20.21 <- normalize(df$assists.20.21)
 
 # save the cleaned data frame to file 
 write.csv(df, "./data/performance-clean.csv",row.names=FALSE)
-
-
