@@ -88,14 +88,15 @@ par(mfrow=c(1,1))
 
 ### WHY WE AGGREGATE 
 # inconsistency in p-values in various features of the same years and between years.
-# TODO!!!!!!!
+# TODO
 
 ### TEST 5
-# only sums
+# In this model every seasonal feature (games, goals, ..., yellows,...) is condensed in one unique feature. 
+# Ex: games <= games.17.18 + games.18.19 + games.19.20 + games.20.21
 lm.model <- lm(formula= market.value ~
                  age+height+offensive+foot+
                  contract.expires+current.league+
-                 games+goals+assists+
+                 games+goals+assists+minutes+
                  yellow+orange+red,
                data=df)
 summary(lm.model) # ~ Adjusted R-squared: 0.6038
@@ -106,9 +107,9 @@ mtext("Model 5: log(market.value) + years 20/21+19/20+18/19+17/18", side = 3, li
 par(mfrow=c(1,1))
 
 
-
 ### BACKWARD MODEL SELECTION
 ### TEST 5.1
+# In order to understand which feature to keep we apply "backward selection" on the model
 lm.model <- step(lm.model,steps=20,trace=0,direction = "backward")
 summary(lm.model) # ~ Adjusted R-squared: 0.6039
 # visualize model results
@@ -127,6 +128,9 @@ par(mfrow=c(1,1))
 
 ######### BEST MODEL
 ### TEST 5.2
+# In this model we keep only the features that were significant after the application of the "step" function 
+# that executed a "backward model selection" on the previous model.
+# Now we obtain a reduced model with less parameters (and all statistically significant) and very similiar Adjusted R-squared values.
 lm.model <- lm(formula= market.value ~
                  age+offensive+height+
                  games+goals+assists+
@@ -152,7 +156,7 @@ split = sample.split(df$market.value, SplitRatio = 0.75)
 training = subset(df, split == TRUE)
 testing = subset(df, split == FALSE)
 
-# here we use the reduced model ( last tested ) with the selected features only (after backward model selection)
+# here we use the reduced model ( last tested: 5.2 ) with the selected features only (after backward model selection)
 lm.model <- lm(formula= market.value ~
                  age+offensive+height+
                  games+goals+assists+
