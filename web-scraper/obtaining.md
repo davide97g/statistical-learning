@@ -2,6 +2,10 @@
 
 We obtained the raw data using `Beautiful Soup` in `Python`.
 
+> We extended the code written by [vnherdeiro](https://github.com/vnherdeiro/transfermarkt-scraping/commits?author=vnherdeiro "View all commits by vnherdeiro") and this is the [repository](https://github.com/vnherdeiro/transfermarkt-scraping).
+
+Our contribution was to extract more features and collect every type of player.
+
 ## Results
 
 `../data/performance.csv`
@@ -26,11 +30,3 @@ We obtained the raw data using `Beautiful Soup` in `Python`.
 - `league.py` for every league extracts the list of teams
 - `team.py` for every team extracts the list of players filtering out the goalkeepers
 - `player.py` downloads the information of a single player: his personal attributes and for every season the relevant statistics
-
-### main
-
-### league
-
-### team
-
-### player
