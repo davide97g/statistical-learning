@@ -1,15 +1,17 @@
 # statistical-learning
 
-Statistical learning project 2020
+Statistical learning project 2019/2020
 
 ## authors
 
-Davide Ghiotto | Darko Ivanovski
+Davide Ghiotto 1236660 | Darko Ivanovski 1243085
 
 ## language
 
-R + RStudio
+Python + R
 
 ## requirements
 
-- R + RStudio
+- R
+- RStudio
+- Python 3
