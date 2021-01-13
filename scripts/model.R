@@ -274,6 +274,55 @@ get.accuracy(training,testing,c(.33,.67),c("low","medium","high")) # Accuracy 63
 ### COMPARE WITH LDA BUILT-IN FUNCTION ###
 ##########################################
 
+### 4 classes
+
+thresholds <- c(.25,.50,.75)
+class.names <- c("low","medium","high","super")
+
+q <- quantile(df$market.value,thresholds)
+
+# create price.class feature on entire dataset based on percentile thresholds
+df[df$market.value<=q[[1]],'price.class']=class.names[1]
+df[(df$market.value>q[[1]])&(df$market.value<=q[[2]]),'price.class']=class.names[2]
+df[(df$market.value>q[[2]])&(df$market.value<=q[[3]]),'price.class']=class.names[3]
+df[df$market.value>q[[3]],'price.class']=class.names[4]
+
+df$price.class <- as.factor(df$price.class)
+
+plot(df$price.class, main="Distribution of 5 'price.class' among entire dataset")
+
+# same seed as before to be consistent with the train/test split
+set.seed(100)
+split = sample.split(df$market.value, SplitRatio = 0.75)
+
+training = subset(df, split == TRUE)
+testing = subset(df, split == FALSE)
+
+# Here we use the same features but the model tries to fit on the "price.class" feature directly
+lda.model <- lda(formula=price.class~
+                   age+offensive+
+                   contract.expires+current.league+
+                   games+goals+assists+
+                   yellow,
+                 data=training)
+
+confusionMatrix(testing$price.class, predict(lda.model,newdata = testing)$class) # Accuracy 52.2%
+
+# Quadratic Discriminant Analysis
+qda.model <- qda(formula=price.class~
+                   age+offensive+
+                   contract.expires+current.league+
+                   games+goals+assists+
+                   yellow,
+                 data=training)
+
+confusionMatrix(testing$price.class, predict(qda.model,newdata = testing)$class) # Accuracy 50.79%
+
+
+### 3 classes
+
+df$price.class = NULL # remove previous classes assigned
+
 thresholds <- c(.33,.67)
 class.names <- c("low","medium","high")
 
@@ -286,7 +335,7 @@ df[df$market.value>q[[2]],'price.class']=class.names[3]
 
 df$price.class <- as.factor(df$price.class)
 
-plot(df$price.class, main="Distribution of 'price.class' among entire dataset")
+plot(df$price.class, main="Distribution of 3 'price.class' among entire dataset")
 
 # same seed as before to be consistent with the train/test split
 set.seed(100)
@@ -310,3 +359,13 @@ confusionMatrix(testing$price.class, predict(lda.model,newdata = testing)$class)
 # high    251  23     85
 # low      13 279     86
 # medium   70 128    199
+
+# Here we use the same features but the model tries to fit on the "price.class" feature directly
+qda.model <- qda(formula=price.class~
+                  age+offensive+
+                  contract.expires+current.league+
+                  games+goals+assists+
+                  yellow,
+                data=training)
+
+confusionMatrix(testing$price.class, predict(qda.model,newdata = testing)$class) # Accuracy 59.61%
