@@ -10,7 +10,7 @@ df <- read.csv("./data/performance-clean.csv",encoding = "UTF-8")
 ### TEST 1
 # player attributes + year 20/21
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games.20.21+goals.20.21+minutes.20.21+assists.20.21+yellow.player.20.21+orange.player.20.21+red.player.20.21,
                data=df)
@@ -26,7 +26,7 @@ par(mfrow=c(1,1))
 # convert response variable to log
 df$market.value <- log(df$market.value)
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games.20.21+goals.20.21+minutes.20.21+assists.20.21+yellow.player.20.21+orange.player.20.21+red.player.20.21,
                data=df)
@@ -41,7 +41,7 @@ par(mfrow=c(1,1))
 ### TEST 2
 # model years 20/21+19/20
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games.19.20+goals.19.20+minutes.19.20+assists.19.20+yellow.player.19.20+orange.player.19.20+red.player.19.20+
                  games.20.21+goals.20.21+minutes.20.21+assists.20.21+yellow.player.20.21+orange.player.20.21+red.player.20.21
@@ -56,7 +56,7 @@ par(mfrow=c(1,1))
 ### TEST 3
 # years: 20/21 + 19/20 + 18/19
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games.18.19+goals.18.19+minutes.18.19+assists.18.19+yellow.player.18.19+orange.player.18.19+red.player.18.19+
                  games.19.20+goals.19.20+minutes.19.20+assists.19.20+yellow.player.19.20+orange.player.19.20+red.player.19.20+
@@ -72,7 +72,7 @@ par(mfrow=c(1,1))
 ### TEST 4
 # years: 20/21 + 19/20 + 18/19 + 17/18
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games.17.18+goals.17.18+minutes.17.18+assists.17.18+yellow.player.17.18+orange.player.17.18+red.player.17.18+
                  games.18.19+goals.18.19+minutes.18.19+assists.18.19+yellow.player.18.19+orange.player.18.19+red.player.18.19+
@@ -125,7 +125,7 @@ par(mfrow=c(1,1))
 # In this model every seasonal feature (games, goals, ..., yellows,...) is condensed in one unique feature. 
 # Ex: games <= games.17.18 + games.18.19 + games.19.20 + games.20.21
 lm.model <- lm(formula= market.value ~
-                 age+height+offensive+foot+
+                 age+height+offensive+
                  contract.expires+current.league+
                  games+goals+assists+minutes+
                  yellow+orange+red,
