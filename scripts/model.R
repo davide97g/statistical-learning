@@ -176,6 +176,7 @@ plot(lm.model)
 mtext("Model 5.2: Final reduced model", side = 3, line = -28, outer = TRUE)
 par(mfrow=c(1,1))
 
+coefficients(lm.model) ## get final coefficients
 
 ################################# REGRESSION ON TRAINING SET #################################
 
