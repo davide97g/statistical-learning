@@ -4,10 +4,302 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Statistical Learning Project</title>
-    <script src="demo/main.js"></script>
+    <link
+      href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <script defer async src="demo/main.js"></script>
+    <link rel="stylesheet" href="demo/style.css" />
   </head>
-  <body>
+  <body id="main">
     <h1>Statistical Learning Project</h1>
     <h2>Predict Market Value of Soccer Players</h2>
+
+    <!-- personal attributes -->
+    <section class="row">
+      <!-- age -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id">Age</span>
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="age"
+          type="number"
+          min="16"
+          max="50"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+      </label>
+      <!-- height -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id">Height</span>
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="height"
+          type="number"
+          min="130"
+          max="210"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+        <span class="mdc-text-field__affix mdc-text-field__affix--suffix"
+          >cm</span
+        >
+      </label>
+      <!-- contract -->
+      <label
+        class="mdc-text-field mdc-text-field--outlined"
+        style="width: 200px"
+      >
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id"
+              >Contract Expires (years left)</span
+            >
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="contract"
+          type="number"
+          min="0"
+          max="10"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+        <span class="mdc-text-field__affix mdc-text-field__affix--suffix"
+          >years</span
+        >
+      </label>
+      <!-- offensive -->
+      <div class="mdc-switch">
+        <div class="mdc-switch__track"></div>
+        <div class="mdc-switch__thumb-underlay">
+          <div class="mdc-switch__thumb"></div>
+          <input
+            type="checkbox"
+            id="offensive"
+            class="mdc-switch__native-control"
+            role="switch"
+            aria-checked="false"
+          />
+        </div>
+      </div>
+      <label for="offensive">Offensive</label>
+    </section>
+
+    <!-- game statistics -->
+    <section class="row">
+      <!-- games -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id">Games</span>
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="games"
+          type="number"
+          min="0"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+      </label>
+      <!-- goals -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id">Goals</span>
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="goals"
+          type="number"
+          min="0"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+      </label>
+      <!-- assists -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id">Assists</span>
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="assists"
+          type="number"
+          min="0"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+      </label>
+      <!-- yellows cards -->
+      <label class="mdc-text-field mdc-text-field--outlined">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__notch">
+            <span class="mdc-floating-label" id="my-label-id"
+              >Yellow Cards</span
+            >
+          </span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input
+          id="yellows"
+          type="number"
+          min="0"
+          class="mdc-text-field__input"
+          aria-labelledby="my-label-id"
+        />
+      </label>
+    </section>
+
+    <!-- leagues -->
+    <section class="row">
+      <div class="mdc-select mdc-select--filled demo-width-class">
+        <div
+          class="mdc-select__anchor"
+          role="button"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-labelledby="demo-label demo-selected-text"
+        >
+          <span class="mdc-select__ripple"></span>
+          <span id="demo-label" class="mdc-floating-label"
+            >Choose the League</span
+          >
+          <span class="mdc-select__selected-text-container">
+            <span
+              id="demo-selected-text"
+              class="mdc-select__selected-text"
+            ></span>
+          </span>
+          <span class="mdc-select__dropdown-icon">
+            <svg
+              class="mdc-select__dropdown-icon-graphic"
+              viewBox="7 10 10 5"
+              focusable="false"
+            >
+              <polygon
+                class="mdc-select__dropdown-icon-inactive"
+                stroke="none"
+                fill-rule="evenodd"
+                points="7 10 12 15 17 10"
+              ></polygon>
+              <polygon
+                class="mdc-select__dropdown-icon-active"
+                stroke="none"
+                fill-rule="evenodd"
+                points="7 15 12 10 17 15"
+              ></polygon>
+            </svg>
+          </span>
+          <span class="mdc-line-ripple"></span>
+        </div>
+
+        <div
+          class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth"
+        >
+          <ul class="mdc-list" role="listbox" aria-label="Food picker listbox">
+            <li
+              class="mdc-list-item mdc-list-item--selected"
+              aria-selected="true"
+              data-value=""
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="other"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> Other </span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="bundesliga"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> Bundesliga </span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="la-liga"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> La Liga </span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="ligue-1"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> Ligue 1 </span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="premier-league"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> Premier League </span>
+            </li>
+            <li
+              class="mdc-list-item"
+              aria-selected="false"
+              data-value="serie-a"
+              role="option"
+            >
+              <span class="mdc-list-item__ripple"></span>
+              <span class="mdc-list-item__text"> Serie A </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- action button -->
+    <button
+      id="action-button"
+      class="mdc-button foo-button"
+      onclick="getMarketValue()"
+    >
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Get Market Value</span>
+    </button>
   </body>
 </html>
