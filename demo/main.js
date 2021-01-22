@@ -57,17 +57,22 @@ function getMarketValue() {
   const goals = parseInt(document.getElementById("goals").value);
   const assists = parseInt(document.getElementById("assists").value);
   const yellows = parseInt(document.getElementById("yellows").value);
-  let league_value = 0;
+  let offensive_value = offensive ? coefficients[2] : 0;
   let market_value =
-    coefficients[0] + age * coefficients[1] + offensive
-      ? coefficients[2]
-      : 0 +
-        height * coefficients[3] +
-        games * coefficients[4] +
-        goals * coefficients[5] +
-        assists * coefficients[6] +
-        contract * coefficients[7] +
-        yellows * coefficients[8] +
-        league_value;
-  console.info(offensive, market_value);
+    coefficients[0] +
+    age * coefficients[1] +
+    offensive_value +
+    height * coefficients[3] +
+    games * coefficients[4] +
+    goals * coefficients[5] +
+    assists * coefficients[6] +
+    contract * coefficients[7] +
+    yellows * coefficients[8] +
+    league_value;
+  market_value = Math.exp(market_value);
+  console.info("Market value predicted", market_value);
+  let market_value_text = document.getElementById("market-value");
+  market_value_text.innerText =
+    "Market Value Predicted: " + market_value + " €";
+  market_value_text.style = "display:block;";
 }
