@@ -69,7 +69,7 @@ function getMarketValue() {
     contract * coefficients[7] +
     yellows * coefficients[8] +
     league_value;
-  market_value = Math.exp(market_value);
+  market_value = Math.round(Math.exp(market_value));
   console.info("Market value predicted", market_value);
   let market_value_text = document.getElementById("market-value");
   market_value_text.innerText =
